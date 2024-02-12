@@ -18,6 +18,7 @@ npx nx serve ball-game
 3. `@react-three/drei` not required, but has a lot of handy ThreeJS react components
 4. `@react-three/rapier` provides physics. Other physics engines are available.
 5. `leva` is used to alter components directly in the scene to experiment quickly
+6. `wouter` is used to add URL routing to control access to different levels. Similar to react-router but without reliance on react-dom.
 
 ```bash
 yarn add three @types/three @react-three/fiber @react-three/drei @react-three/rapier

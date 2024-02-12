@@ -1,5 +1,6 @@
 import { RigidBody } from '@react-three/rapier';
 import { Box } from '@react-three/drei';
+import { useLevelContext } from '../providers/level-provider';
 
 type BoxObstacleProps = {
   row: number;
@@ -12,11 +13,12 @@ export default function BoxObstacle({
   column,
   colspan,
 }: BoxObstacleProps) {
+  const { platformWidth } = useLevelContext();
+
+  // @todo Change gap/placement logic to grid based system for quick configuration
   const rowGap = 5;
   const posZ = row * rowGap * -1;
 
-  // @todo: feed this in from above
-  const platformWidth = 5;
   const centreOffset = platformWidth * 0.5;
   const width = colspan;
   const posX = -(colspan * 0.5) - column;

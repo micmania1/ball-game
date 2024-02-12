@@ -1,23 +1,17 @@
 import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
 import {
-  Html,
   KeyboardControls,
   OrbitControls,
-  OrthographicCamera,
   PerspectiveCamera,
 } from '@react-three/drei';
-import { Physics } from '@react-three/rapier';
-import Ball from './components/ball';
-import Platform from './components/platform';
 import Sky from './components/sky';
-import { useControls } from 'leva';
-import Goal from './components/goal';
-import { useMemo, useState } from 'react';
-import BoxObstacle from './components/box-obstacle';
+import { useMemo } from 'react';
 import GameProvider from './providers/game-provider';
 import StartMenu from './components/start-menu';
 import Level1 from './levels/level-1';
+import { Route, Switch } from 'wouter';
+import LevelProvider from './providers/level-provider';
 
 const StyledApp = styled.div`
   position: absolute;
@@ -37,6 +31,7 @@ export function App() {
       { name: 'left', keys: ['ArrowLeft'] },
       { name: 'right', keys: ['ArrowRight'] },
       { name: 'backward', keys: ['ArrowDown'] },
+      { name: 'pause', keys: ['p'] },
     ],
     []
   );
@@ -49,14 +44,23 @@ export function App() {
         <OrbitControls />
         <Sky />
 
-        <GameProvider>
-          <PerspectiveCamera makeDefault position={[0, 12, 2]} />
+        <KeyboardControls map={keyboardControls}>
+          <GameProvider>
+            <PerspectiveCamera makeDefault position={[0, 12, 2]} />
 
-          <StartMenu />
-          <KeyboardControls map={keyboardControls}>
-            <Level1 />
-          </KeyboardControls>
-        </GameProvider>
+            <Switch>
+              <Route path={'/'}>
+                <StartMenu />
+              </Route>
+              <Route path={'/level-1'}>
+                <LevelProvider platformWidth={5} platformLength={35}>
+                  <Level1 />
+                </LevelProvider>
+              </Route>
+            </Switch>
+            {/*<Hud />*/}
+          </GameProvider>
+        </KeyboardControls>
       </Canvas>
     </StyledApp>
   );

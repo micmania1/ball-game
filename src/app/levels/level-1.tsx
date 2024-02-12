@@ -3,25 +3,16 @@ import Ball from '../components/ball';
 import Platform from '../components/platform';
 import Goal from '../components/goal';
 import BoxObstacle from '../components/box-obstacle';
-import { useGameContext } from '../providers/game-provider';
-import { useControls } from 'leva';
+import { useLevelContext } from '../providers/level-provider';
 
 export default function Level1() {
-  const { isPaused } = useGameContext();
-  const { platformLength, platformWidth, startOffset, endOffset } = useControls(
-    {
-      platformLength: 35,
-      platformWidth: 5,
-      startOffset: -1,
-      endOffset: 1,
-    }
-  );
+  const { isPaused, platformWidth, platformLength } = useLevelContext();
 
   return (
     <Physics paused={isPaused}>
-      <Ball position={[0, startOffset]} />
+      <Ball position={[0, -1]} />
       <Platform size={[platformWidth, -platformLength]} />
-      <Goal position={[0, -platformLength + endOffset]} />
+      <Goal position={[0, -platformLength + 1]} />
 
       <BoxObstacle row={1} column={0} colspan={2} />
       <BoxObstacle row={1} column={3} colspan={2} />

@@ -1,6 +1,6 @@
+import { useLevelContext } from '../providers/level-provider';
 import styled from 'styled-components';
 import { Html } from '@react-three/drei';
-import { useGameContext } from '../providers/game-provider';
 
 const Overlay = styled.div`
   position: fixed;
@@ -13,7 +13,7 @@ const Overlay = styled.div`
   padding: 40px;
 `;
 
-const StartButton = styled.button`
+const ContinueButton = styled.button`
   padding: 20px;
   box-shadow: none;
   border: 5px solid purple;
@@ -28,12 +28,14 @@ const StartButton = styled.button`
   }
 `;
 
-export default function StartMenu() {
-  const { level, setLevel } = useGameContext();
-  return level === 0 ? (
+export default function PauseMenu() {
+  const { isPaused, setPaused } = useLevelContext();
+  return isPaused ? (
     <Html fullscreen prepend zIndexRange={[10]}>
       <Overlay>
-        <StartButton onClick={() => setLevel(1)}>Start</StartButton>
+        <ContinueButton onClick={() => setPaused(false)}>
+          Continue
+        </ContinueButton>
       </Overlay>
     </Html>
   ) : null;
