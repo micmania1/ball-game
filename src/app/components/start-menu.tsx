@@ -30,10 +30,10 @@ const StartButton = styled.button`
 
 export default function StartMenu() {
   const { level, setLevel } = useGameContext();
-  return level === 0 ? (
+  return level === 'start' ? (
     <Html fullscreen prepend zIndexRange={[10]}>
       <Overlay>
-        <StartButton onClick={() => setLevel(1)}>Start</StartButton>
+        <StartButton onClick={() => setLevel('level1')}>Start</StartButton>
       </Overlay>
     </Html>
   ) : null;

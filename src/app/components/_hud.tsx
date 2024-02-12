@@ -9,13 +9,13 @@ const Navigation = styled.div`
   width: 50vw;
 `;
 
-export default function Hud() {
+export default function _hud() {
   const { setLevel } = useGameContext();
   return (
     <Html fullscreen zIndexRange={[100]}>
       <Navigation>
-        <button onClick={() => setLevel(0)}>Start</button>
-        <button onClick={() => setLevel(1)}>Level 1</button>
+        <button onClick={() => setLevel('start')}>Start</button>
+        <button onClick={() => setLevel('level1')}>Level 1</button>
       </Navigation>
     </Html>
   );

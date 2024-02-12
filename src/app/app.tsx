@@ -6,12 +6,15 @@ import {
   PerspectiveCamera,
 } from '@react-three/drei';
 import Sky from './components/sky';
-import { useMemo } from 'react';
+import { lazy, Suspense } from 'react';
 import GameProvider from './providers/game-provider';
+import { Redirect, Route, Switch } from 'wouter';
+import levels from './config/levels';
+import keyboardControls from './config/keyboardControls';
 import StartMenu from './components/start-menu';
-import Level1 from './levels/level-1';
-import { Route, Switch } from 'wouter';
-import LevelProvider from './providers/level-provider';
+
+const LevelProvider = lazy(() => import('./providers/level-provider'));
+const Level1 = lazy(() => import('./levels/level-1'));
 
 const StyledApp = styled.div`
   position: absolute;
@@ -25,17 +28,6 @@ const StyledApp = styled.div`
 `;
 
 export function App() {
-  const keyboardControls = useMemo(
-    () => [
-      { name: 'forward', keys: ['ArrowUp'] },
-      { name: 'left', keys: ['ArrowLeft'] },
-      { name: 'right', keys: ['ArrowRight'] },
-      { name: 'backward', keys: ['ArrowDown'] },
-      { name: 'pause', keys: ['p'] },
-    ],
-    []
-  );
-
   return (
     <StyledApp>
       <Canvas camera={{ position: [0, 10, 8] }}>
@@ -45,20 +37,21 @@ export function App() {
         <Sky />
 
         <KeyboardControls map={keyboardControls}>
-          <GameProvider>
+          <GameProvider levelConfig={levels}>
             <PerspectiveCamera makeDefault position={[0, 12, 2]} />
 
             <Switch>
-              <Route path={'/'}>
-                <StartMenu />
-              </Route>
-              <Route path={'/level-1'}>
-                <LevelProvider platformWidth={5} platformLength={35}>
-                  <Level1 />
-                </LevelProvider>
-              </Route>
+              <Suspense fallback={null}>
+                <Route path={levels.start.url}>
+                  <StartMenu />
+                </Route>
+                <Route path={levels.level1.url}>
+                  <LevelProvider platformWidth={5} platformLength={35}>
+                    <Level1 />
+                  </LevelProvider>
+                </Route>
+              </Suspense>
             </Switch>
-            {/*<Hud />*/}
           </GameProvider>
         </KeyboardControls>
       </Canvas>

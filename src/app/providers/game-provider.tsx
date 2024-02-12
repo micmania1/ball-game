@@ -6,33 +6,34 @@ import {
   useState,
 } from 'react';
 import { useLocation } from 'wouter';
+import { LevelName, Levels } from '../config/levels';
 
 type GameProviderProps = {
   children: ReactNode;
+  levelConfig: Levels;
 };
 
 type GameState = {
-  level: number;
-  setLevel: (level: number) => void;
+  level: LevelName;
+  setLevel: (level: LevelName) => void;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const GameContext = createContext<GameState>(null!);
 
-export default function GameProvider({ children }: GameProviderProps) {
-  const [level, setLevelNumber] = useState(0);
+export default function GameProvider({
+  children,
+  levelConfig,
+}: GameProviderProps) {
+  const [level, setLevelKey] = useState<LevelName>('start');
   const [, setLocation] = useLocation();
 
   const setLevel = useCallback(
-    (newLevel: number) => {
-      setLevelNumber(newLevel);
-      if (newLevel > 0) {
-        setLocation(`/level-${newLevel}`);
-      } else {
-        setLocation('/');
-      }
+    (newLevel: LevelName) => {
+      setLevelKey(newLevel);
+      setLocation(levelConfig[newLevel].url);
     },
-    [setLevelNumber, setLocation]
+    [setLevelKey, setLocation]
   );
 
   return (

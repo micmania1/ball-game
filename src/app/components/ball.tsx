@@ -3,6 +3,7 @@ import { Sphere, useKeyboardControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
+import { KeyboardControls } from '../config/keyboardControls';
 
 type BallProps = {
   position: THREE.Vector2Tuple;
@@ -13,7 +14,7 @@ function int(b: boolean) {
 }
 
 export default function Ball({ position }: BallProps) {
-  const [, get] = useKeyboardControls();
+  const [, get] = useKeyboardControls<KeyboardControls>();
   const ballRef = useRef<RapierRigidBody>(null);
   const [x, z] = position;
   const speed = 50;

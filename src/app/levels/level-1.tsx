@@ -16,10 +16,14 @@ export default function Level1() {
 
       <BoxObstacle row={1} column={0} colspan={2} />
       <BoxObstacle row={1} column={3} colspan={2} />
+
       <BoxObstacle row={2} column={0} colspan={3} />
+
       <BoxObstacle row={3} column={2} colspan={3} />
+
       <BoxObstacle row={4} column={0} colspan={1} />
       <BoxObstacle row={4} column={3} colspan={2} />
+
       <BoxObstacle row={5} column={0} colspan={3} />
     </Physics>
   );

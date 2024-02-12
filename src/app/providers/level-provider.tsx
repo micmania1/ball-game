@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { useKeyboardControls } from '@react-three/drei';
 import PauseMenu from '../components/pause-menu';
+import { KeyboardControls } from '../config/keyboardControls';
 
 type LevelState = {
   isPaused: boolean;
@@ -30,7 +31,9 @@ export default function LevelProvider({
   platformLength,
 }: LevelProviderProps) {
   const [isPaused, setPaused] = useState(false);
-  const wasPausePressed = useKeyboardControls((keys) => keys.pause);
+  const wasPausePressed = useKeyboardControls<KeyboardControls>(
+    (keys) => keys.pause
+  );
 
   useEffect(() => {
     if (wasPausePressed) {
