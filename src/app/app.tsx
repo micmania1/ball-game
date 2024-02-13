@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
 import {
+  Box,
   KeyboardControls,
   OrbitControls,
   PerspectiveCamera,
@@ -8,10 +9,10 @@ import {
 import Sky from './components/sky';
 import { lazy, Suspense } from 'react';
 import GameProvider from './providers/game-provider';
-import { Redirect, Route, Switch } from 'wouter';
+import { Route, Switch } from 'wouter';
 import levels from './config/levels';
-import keyboardControls from './config/keyboardControls';
 import StartMenu from './components/start-menu';
+import keyboardControls from './config/keyboard-controls';
 
 const LevelProvider = lazy(() => import('./providers/level-provider'));
 const Level1 = lazy(() => import('./levels/level-1'));

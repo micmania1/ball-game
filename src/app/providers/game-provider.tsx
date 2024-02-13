@@ -14,7 +14,7 @@ type GameProviderProps = {
 };
 
 type GameState = {
-  level: LevelName;
+  // level: LevelName;
   setLevel: (level: LevelName) => void;
 };
 
@@ -25,21 +25,19 @@ export default function GameProvider({
   children,
   levelConfig,
 }: GameProviderProps) {
-  const [level, setLevelKey] = useState<LevelName>('start');
+  // const [level, setLevelKey] = useState<LevelName>('start');
   const [, setLocation] = useLocation();
 
   const setLevel = useCallback(
     (newLevel: LevelName) => {
-      setLevelKey(newLevel);
+      // setLevelKey(newLevel);
       setLocation(levelConfig[newLevel].url);
     },
-    [setLevelKey, setLocation]
+    [levelConfig, setLocation]
   );
 
   return (
-    <GameContext.Provider value={{ level, setLevel }}>
-      {children}
-    </GameContext.Provider>
+    <GameContext.Provider value={{ setLevel }}>{children}</GameContext.Provider>
   );
 }
 
