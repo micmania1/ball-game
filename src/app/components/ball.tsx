@@ -23,7 +23,7 @@ const Ball = forwardRef<BallRef, BallProps>(function ({ position }, ref) {
   const [x, z] = position;
   const mass = 1;
   const radius = 0.25;
-  const acceleration = 25;
+  const acceleration = 0.25;
   const friction = 10;
   const angularDamping = 1;
   const linearDamping = 1;
@@ -38,7 +38,6 @@ const Ball = forwardRef<BallRef, BallProps>(function ({ position }, ref) {
   });
 
   useFrame(({ clock }, delta) => {
-    // const debugBox = boxRef.current;
     const ball = ballRef.current;
     const forward = int(get().backward) - int(get().forward);
     const sideways = int(get().left) - int(get().right);
@@ -47,7 +46,10 @@ const Ball = forwardRef<BallRef, BallProps>(function ({ position }, ref) {
       const forwardMovement = forward * acceleration * delta;
       const sidewaysMovement = sideways * acceleration * delta;
       ball.resetTorques(false);
-      ball.addTorque({ x: forwardMovement, y: 0, z: sidewaysMovement }, true);
+      ball.applyTorqueImpulse(
+        { x: forwardMovement, y: 0, z: sidewaysMovement },
+        true
+      );
     }
   });
 
