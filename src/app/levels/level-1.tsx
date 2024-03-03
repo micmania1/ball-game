@@ -1,16 +1,21 @@
 import { Physics } from '@react-three/rapier';
-import Ball from '../components/ball';
+import Ball, { BallRef } from '../components/ball';
 import Platform from '../components/platform';
 import Goal from '../components/goal';
 import BoxObstacle from '../components/box-obstacle';
 import { useLevelContext } from '../providers/level-provider';
+import { useRef } from 'react';
+import CameraFocus from '../components/CameraFocus';
 
 export default function Level1() {
   const { isPaused, platformWidth, platformLength } = useLevelContext();
+  const ballRef = useRef<BallRef>(null);
 
   return (
     <Physics paused={isPaused}>
-      <Ball position={[0, -1]} />
+      <Ball position={[0, -1]} ref={ballRef} />
+      <CameraFocus focusRef={ballRef} offset={[0, 5, 10]} />
+
       <Platform size={[platformWidth, -platformLength]} />
       <Goal position={[0, -platformLength + 1]} />
 
