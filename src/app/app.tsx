@@ -1,11 +1,6 @@
 import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
-import {
-  Box,
-  KeyboardControls,
-  OrbitControls,
-  PerspectiveCamera,
-} from '@react-three/drei';
+import { KeyboardControls } from '@react-three/drei';
 import Sky from './components/sky';
 import { lazy, Suspense } from 'react';
 import GameProvider from './providers/game-provider';
@@ -31,16 +26,13 @@ const StyledApp = styled.div`
 export function App() {
   return (
     <StyledApp>
-      <Canvas camera={{ position: [0, 10, 8] }}>
+      <Canvas camera={{ position: [0, 10, 15] }}>
         <ambientLight args={[0x404040, 20]} />
         <directionalLight position={[0, 20, 20]} />
-        <OrbitControls />
         <Sky />
 
         <KeyboardControls map={keyboardControls}>
           <GameProvider levelConfig={levels}>
-            <PerspectiveCamera makeDefault position={[0, 12, 2]} />
-
             <Switch>
               <Suspense fallback={null}>
                 <Route path={levels.start.url}>

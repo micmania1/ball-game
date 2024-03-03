@@ -10,7 +10,6 @@ const Overlay = styled.div`
   justify-content: center;
   align-items: center;
   background: rgba(0, 0, 0, 0.5);
-  padding: 40px;
 `;
 
 const StartButton = styled.button`
