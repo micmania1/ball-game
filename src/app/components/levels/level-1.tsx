@@ -1,11 +1,11 @@
-import Platform from '../components/platform';
-import Goal from '../components/goal';
-import BoxObstacle from '../components/box-obstacle';
+import Platform from '../physics/platform';
+import Goal from '../physics/goal';
+import BoxObstacle from '../physics/box-obstacle';
 import { useLevelContext } from '../providers/level-provider';
-import Ball, { BallRef } from '../components/ball';
+import Ball, { BallRef } from '../physics/ball';
 import CameraFocus from '../components/CameraFocus';
-import LosePlans from '../components/lose-plans';
-import useVector3 from '../utils/use-vector3';
+import LosePlans from '../physics/lose-plans';
+import useVector3 from '../../utils/use-vector3';
 import { useCallback, useRef } from 'react';
 
 export default function Level1() {

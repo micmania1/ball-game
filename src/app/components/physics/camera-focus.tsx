@@ -1,5 +1,5 @@
 import { useFrame, useThree } from '@react-three/fiber';
-import useVector3 from '../utils/use-vector3';
+import useVector3 from '../../utils/use-vector3';
 import { Vector3Tuple } from 'three';
 import { RapierRigidBody, useAfterPhysicsStep } from '@react-three/rapier';
 import { RefObject } from 'react';

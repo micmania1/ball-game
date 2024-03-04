@@ -7,8 +7,8 @@ import {
   useState,
 } from 'react';
 import { useKeyboardControls } from '@react-three/drei';
-import PauseMenu from '../components/pause-menu';
-import { KeyboardControls } from '../config/keyboard-controls';
+import PauseMenu from '../ui/pause-menu';
+import { KeyboardControls } from '../../config/keyboard-controls';
 import { Physics } from '@react-three/rapier';
 import { useGameContext } from './game-provider';
 

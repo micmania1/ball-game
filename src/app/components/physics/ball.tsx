@@ -8,8 +8,8 @@ import { Sphere, useKeyboardControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { KeyboardControls } from '../config/keyboard-controls';
-import { collissionGroups } from '../config/physics';
+import { KeyboardControls } from '../../config/keyboard-controls';
+import { collisionGroups } from '../../config/physics';
 
 type BallProps = {
   position: THREE.Vector3Tuple;
@@ -70,7 +70,7 @@ const Ball = forwardRef<BallRef, BallProps>(function ({ position }, ref) {
       restitution={restitution}
       friction={friction}
       ref={ballRef}
-      collisionGroups={collissionGroups.ball}
+      collisionGroups={collisionGroups.ball}
     >
       <Sphere args={[radius]} name="ball">
         <meshStandardMaterial color="red" />

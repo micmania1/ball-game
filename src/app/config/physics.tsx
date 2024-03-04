@@ -6,7 +6,7 @@ const obstacle = 2;
 const goal = 3;
 const lose = 4;
 
-export const collissionGroups = {
+export const collisionGroups = {
   environment: interactionGroups(environment, [ball]),
   ball: interactionGroups(ball),
   obstacle: interactionGroups(obstacle, [ball]),

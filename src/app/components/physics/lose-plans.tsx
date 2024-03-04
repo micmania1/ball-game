@@ -1,11 +1,6 @@
-import {
-  CuboidCollider,
-  interactionGroups,
-  RigidBody,
-  useRapier,
-} from '@react-three/rapier';
+import { CuboidCollider, RigidBody, useRapier } from '@react-three/rapier';
 import { Box } from '@react-three/drei';
-import { collissionGroups } from '../config/physics';
+import { collisionGroups } from '../../config/physics';
 
 type LosePlaneProps = {
   width: number;
@@ -23,7 +18,7 @@ export default function LosePlans({ width, depth, onHit }: LosePlaneProps) {
       colliders="cuboid"
       sensor
       onIntersectionEnter={() => onHit()}
-      collisionGroups={collissionGroups.lose}
+      collisionGroups={collisionGroups.lose}
     >
       {isDebug ? (
         <Box args={[width, 1, depth]}>

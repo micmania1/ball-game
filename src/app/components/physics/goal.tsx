@@ -1,7 +1,7 @@
 import { Box } from '@react-three/drei';
 import * as THREE from 'three';
 import { RigidBody } from '@react-three/rapier';
-import { collissionGroups } from '../config/physics';
+import { collisionGroups } from '../../config/physics';
 
 type GoalProps = {
   position: THREE.Vector3Tuple;
@@ -17,7 +17,7 @@ export default function Goal({ position, size, onEnter }: GoalProps) {
       position={position}
       colliders="cuboid"
       sensor
-      collisionGroups={collissionGroups.goal}
+      collisionGroups={collisionGroups.goal}
       onIntersectionEnter={() => {
         onEnter();
       }}

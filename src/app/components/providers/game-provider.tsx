@@ -6,9 +6,9 @@ import {
   useState,
 } from 'react';
 import { useLocation } from 'wouter';
-import { LevelName, Levels } from '../config/levels';
+import { LevelName, Levels } from '../../config/levels';
 import { useThree } from '@react-three/fiber';
-import useVector3 from '../utils/use-vector3';
+import useVector3 from '../../utils/use-vector3';
 
 type GameProviderProps = {
   children: ReactNode;
