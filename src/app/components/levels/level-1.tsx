@@ -3,10 +3,11 @@ import Goal from '../physics/goal';
 import BoxObstacle from '../physics/box-obstacle';
 import { useLevelContext } from '../providers/level-provider';
 import Ball, { BallRef } from '../physics/ball';
-import CameraFocus from '../components/CameraFocus';
 import LosePlans from '../physics/lose-plans';
 import useVector3 from '../../utils/use-vector3';
 import { useCallback, useRef } from 'react';
+import CameraFocus from '../physics/camera-focus';
+import { defaultCameraOffset } from '../../config/camera';
 
 export default function Level1() {
   const level = useLevelContext();
@@ -35,7 +36,9 @@ export default function Level1() {
         ]}
         ref={ballRef}
       />
-      <CameraFocus focusRef={ballRef} offset={[0, 5, 10]} />
+      <CameraFocus focusRef={ballRef} offset={defaultCameraOffset} />
+
+      {/*<Ball position={[-2, ballStartPosition.y, ballStartPosition.z]} />*/}
 
       <LosePlans width={100} depth={100} onHit={lose} />
       <Platform size={[5, -35]} />
