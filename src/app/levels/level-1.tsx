@@ -36,6 +36,7 @@ export default function Level1() {
         ref={ballRef}
       />
       <CameraFocus focusRef={ballRef} offset={[0, 5, 10]} />
+
       <LosePlans width={100} depth={100} onHit={lose} />
       <Platform size={[5, -35]} />
       <Goal

@@ -1,11 +1,7 @@
 import { Box } from '@react-three/drei';
 import * as THREE from 'three';
-import {
-  interactionGroups,
-  RapierRigidBody,
-  RigidBody,
-} from '@react-three/rapier';
-import { useRef } from 'react';
+import { RigidBody } from '@react-three/rapier';
+import { collissionGroups } from '../config/physics';
 
 type GoalProps = {
   position: THREE.Vector3Tuple;
@@ -14,7 +10,6 @@ type GoalProps = {
 };
 
 export default function Goal({ position, size, onEnter }: GoalProps) {
-  const aRef = useRef<RapierRigidBody>(null);
   return (
     <RigidBody
       type="fixed"
@@ -22,11 +17,10 @@ export default function Goal({ position, size, onEnter }: GoalProps) {
       position={position}
       colliders="cuboid"
       sensor
-      collisionGroups={interactionGroups(0, [1])}
+      collisionGroups={collissionGroups.goal}
       onIntersectionEnter={() => {
         onEnter();
       }}
-      ref={aRef}
     >
       <Box args={size} name="goal">
         <meshBasicMaterial color="green" opacity={0.5} transparent={true} />
