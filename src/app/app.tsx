@@ -39,7 +39,7 @@ export function App() {
                   <StartMenu />
                 </Route>
                 <Route path={levels.level1.url}>
-                  <LevelProvider platformWidth={5} platformLength={35}>
+                  <LevelProvider>
                     <Level1 />
                   </LevelProvider>
                 </Route>

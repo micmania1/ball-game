@@ -3,18 +3,24 @@ import useVector3 from '../utils/use-vector3';
 import { Vector3Tuple } from 'three';
 import { RapierRigidBody, useAfterPhysicsStep } from '@react-three/rapier';
 import { RefObject } from 'react';
+import { OrbitControls } from '@react-three/drei';
 
 type CameraFocusProps = {
   offset: Vector3Tuple;
   focusRef: RefObject<{ rigidBody(): RapierRigidBody | null }>;
+  debug?: boolean;
 };
-export default function CameraFocus({ offset, focusRef }: CameraFocusProps) {
+export default function CameraFocus({
+  offset,
+  focusRef,
+  debug = false,
+}: CameraFocusProps) {
   const focusPosition = useVector3();
   const camera = useThree((three) => three.camera);
 
   useAfterPhysicsStep(() => {
     const rigidBody = focusRef.current?.rigidBody();
-    if (rigidBody) {
+    if (rigidBody && !debug) {
       const { x, y, z } = rigidBody.translation();
       focusPosition.set(x, y, z);
 
@@ -30,5 +36,5 @@ export default function CameraFocus({ offset, focusRef }: CameraFocusProps) {
     }
   });
 
-  return null;
+  return debug ? <OrbitControls /> : null;
 }
