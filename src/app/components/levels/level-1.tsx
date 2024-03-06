@@ -8,6 +8,7 @@ import useVector3 from '../../utils/use-vector3';
 import { useCallback, useRef } from 'react';
 import CameraFocus from '../physics/camera-focus';
 import { defaultCameraOffset } from '../../config/camera';
+import Loading from '../ui/loading';
 
 export default function Level1() {
   const level = useLevelContext();

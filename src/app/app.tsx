@@ -9,6 +9,7 @@ import levels from './config/levels';
 import StartMenu from './components/ui/start-menu';
 import keyboardControls from './config/keyboard-controls';
 import { useHashLocation } from 'wouter/use-hash-location';
+import Loading from './components/ui/loading';
 
 const LevelProvider = lazy(
   () => import('./components/providers/level-provider')
@@ -38,7 +39,7 @@ export function App() {
           <Router hook={useHashLocation}>
             <GameProvider levelConfig={levels}>
               <Switch>
-                <Suspense fallback={null}>
+                <Suspense fallback={<Loading />}>
                   <Route path={levels.start.url}>
                     <StartMenu />
                   </Route>
