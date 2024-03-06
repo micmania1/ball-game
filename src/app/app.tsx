@@ -4,10 +4,11 @@ import { KeyboardControls } from '@react-three/drei';
 import Sky from './components/sky';
 import { lazy, Suspense } from 'react';
 import GameProvider from './components/providers/game-provider';
-import { Route, Switch } from 'wouter';
+import { Route, Router, Switch } from 'wouter';
 import levels from './config/levels';
 import StartMenu from './components/ui/start-menu';
 import keyboardControls from './config/keyboard-controls';
+import { useHashLocation } from 'wouter/use-hash-location';
 
 const LevelProvider = lazy(
   () => import('./components/providers/level-provider')
@@ -34,20 +35,22 @@ export function App() {
         <Sky />
 
         <KeyboardControls map={keyboardControls}>
-          <GameProvider levelConfig={levels}>
-            <Switch>
-              <Suspense fallback={null}>
-                <Route path={levels.start.url}>
-                  <StartMenu />
-                </Route>
-                <Route path={levels.level1.url}>
-                  <LevelProvider>
-                    <Level1 />
-                  </LevelProvider>
-                </Route>
-              </Suspense>
-            </Switch>
-          </GameProvider>
+          <Router hook={useHashLocation}>
+            <GameProvider levelConfig={levels}>
+              <Switch>
+                <Suspense fallback={null}>
+                  <Route path={levels.start.url}>
+                    <StartMenu />
+                  </Route>
+                  <Route path={levels.level1.url}>
+                    <LevelProvider>
+                      <Level1 />
+                    </LevelProvider>
+                  </Route>
+                </Suspense>
+              </Switch>
+            </GameProvider>
+          </Router>
         </KeyboardControls>
       </Canvas>
     </StyledApp>
