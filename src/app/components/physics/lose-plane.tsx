@@ -8,7 +8,7 @@ type LosePlaneProps = {
   onHit(): void;
 };
 
-export default function LosePlans({ width, depth, onHit }: LosePlaneProps) {
+export default function LosePlane({ width, depth, onHit }: LosePlaneProps) {
   const { isDebug } = useRapier();
   return (
     <RigidBody
