@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import { Html } from '@react-three/drei';
 import { useGameContext } from '../providers/game-provider';
+import { useEffect } from 'react';
+import { useThree } from '@react-three/fiber';
+import { defaultCameraOffset } from '../../config/camera';
+import useVector3 from '../../utils/use-vector3';
 
 const Overlay = styled.div`
   position: fixed;
@@ -29,6 +33,14 @@ const StartButton = styled.button`
 
 export default function StartMenu() {
   const { setLevel } = useGameContext();
+  const camera = useThree((three) => three.camera);
+  const focusPosition = useVector3();
+
+  useEffect(() => {
+    camera.position.set(...defaultCameraOffset);
+    camera.lookAt(focusPosition);
+  }, [camera, camera.position, focusPosition]);
+
   return (
     <Html fullscreen prepend zIndexRange={[10]}>
       <Overlay>

@@ -10,6 +10,7 @@ import StartMenu from './components/ui/start-menu';
 import keyboardControls from './config/keyboard-controls';
 import { useHashLocation } from 'wouter/use-hash-location';
 import Loading from './components/ui/loading';
+import { defaultCameraOffset } from './config/camera';
 
 const LevelProvider = lazy(
   () => import('./components/providers/level-provider')
@@ -30,7 +31,7 @@ const StyledApp = styled.div`
 export function App() {
   return (
     <StyledApp>
-      <Canvas camera={{ position: [0, 10, 15] }}>
+      <Canvas camera={{ position: defaultCameraOffset }}>
         <ambientLight args={[0x404040, 20]} />
         <directionalLight position={[0, 20, 20]} />
         <Sky />
