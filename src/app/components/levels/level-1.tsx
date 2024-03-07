@@ -2,18 +2,23 @@ import Platform from '../physics/platform';
 import Goal from '../physics/goal';
 import BoxObstacle from '../physics/box-obstacle';
 import { useLevelContext } from '../providers/level-provider';
-import Ball, { BallRef } from '../physics/ball';
+import Ball from '../physics/ball';
 import LosePlane from '../physics/lose-plane';
 import useVector3 from '../../utils/use-vector3';
 import { useCallback, useRef } from 'react';
-import CameraFocus from '../physics/camera-focus';
+import RigidBodyFollower from '../physics/rigid-body-follower';
 import { defaultCameraOffset } from '../../config/camera';
-import Loading from '../ui/loading';
+import { RapierRigidBodyRef } from '../../types';
+
+function useThing<T>(defaultValue: T | null) {
+  return useRef<T>(defaultValue);
+}
 
 export default function Level1() {
   const level = useLevelContext();
-  const ballRef = useRef<BallRef>(null);
+  // const ballRef = useRef<BallRef>(null);
   const ballStartPosition = useVector3([0, 3, -1]);
+  const ballRef = useThing<RapierRigidBodyRef>(null);
 
   const lose = useCallback(() => {
     level.lose();
@@ -25,7 +30,7 @@ export default function Level1() {
       ball.resetTorques(false);
       ball.setTranslation(ballStartPosition, true);
     }
-  }, [ballStartPosition, level]);
+  }, [ballRef, ballStartPosition, level]);
 
   return (
     <>
@@ -37,7 +42,7 @@ export default function Level1() {
         ]}
         ref={ballRef}
       />
-      <CameraFocus focusRef={ballRef} offset={defaultCameraOffset} />
+      <RigidBodyFollower focusRef={ballRef} offset={defaultCameraOffset} />
 
       <LosePlane width={100} depth={100} onHit={lose} />
       <Platform size={[5, -35]} />

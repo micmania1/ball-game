@@ -1,29 +1,24 @@
-import {
-  interactionGroups,
-  RapierRigidBody,
-  RigidBody,
-  useRapier,
-} from '@react-three/rapier';
+import { RapierRigidBody, RigidBody, useRapier } from '@react-three/rapier';
 import { Sphere, useKeyboardControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { KeyboardControls } from '../../config/keyboard-controls';
 import { collisionGroups } from '../../config/physics';
+import { RapierRigidBodyRef } from '../../types';
 
 type BallProps = {
   position: THREE.Vector3Tuple;
-};
-
-export type BallRef = {
-  rigidBody(): RapierRigidBody | null;
 };
 
 function int(b: boolean) {
   return b ? 1 : 0;
 }
 
-const Ball = forwardRef<BallRef, BallProps>(function ({ position }, ref) {
+const Ball = forwardRef<RapierRigidBodyRef, BallProps>(function (
+  { position },
+  ref
+) {
   const { isPaused } = useRapier();
   const [, get] = useKeyboardControls<KeyboardControls>();
   const ballRef = useRef<RapierRigidBody>(null);

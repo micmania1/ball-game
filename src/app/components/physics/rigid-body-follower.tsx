@@ -1,16 +1,17 @@
-import { useFrame, useThree } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 import useVector3 from '../../utils/use-vector3';
 import { Vector3Tuple } from 'three';
-import { RapierRigidBody, useAfterPhysicsStep } from '@react-three/rapier';
+import { useAfterPhysicsStep } from '@react-three/rapier';
 import { RefObject } from 'react';
 import { OrbitControls } from '@react-three/drei';
+import { RapierRigidBodyRef } from '../../types';
 
 type CameraFocusProps = {
   offset: Vector3Tuple;
-  focusRef: RefObject<{ rigidBody(): RapierRigidBody | null }>;
+  focusRef: RefObject<RapierRigidBodyRef>;
   debug?: boolean;
 };
-export default function CameraFocus({
+export default function RigidBodyFollower({
   offset,
   focusRef,
   debug = false,
