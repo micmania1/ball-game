@@ -11,11 +11,15 @@ import keyboardControls from './config/keyboard-controls';
 import { useHashLocation } from 'wouter/use-hash-location';
 import Loading from './components/ui/loading';
 import { defaultCameraOffset } from './config/camera';
+import RouteFallback from './components/route-fallback';
+import JoinRoom, { JoinRoomParams } from './components/levels/join-room';
+import CenteredText from './components/ui/centered-text';
 
 const LevelProvider = lazy(
   () => import('./components/providers/level-provider')
 );
 const Level1 = lazy(() => import('./components/levels/level-1'));
+const Lobby = lazy(() => import('./components/levels/lobby'));
 
 const StyledApp = styled.div`
   position: absolute;
@@ -39,18 +43,33 @@ export function App() {
         <KeyboardControls map={keyboardControls}>
           <Router hook={useHashLocation}>
             <GameProvider levelConfig={levels}>
-              <Switch>
-                <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Loading />}>
+                <Switch>
                   <Route path={levels.start.url}>
                     <StartMenu />
+                  </Route>
+                  <Route path={levels.creating_lobby.url}>
+                    <CenteredText>Creating game...</CenteredText>
+                  </Route>
+                  <Route path={levels.lobby.url}>
+                    <Lobby />
+                  </Route>
+                  <Route path={levels.won.url}>
+                    <CenteredText>Somebody won!</CenteredText>
                   </Route>
                   <Route path={levels.level1.url}>
                     <LevelProvider>
                       <Level1 />
                     </LevelProvider>
                   </Route>
-                </Suspense>
-              </Switch>
+                  <Route path="/join/:roomCode">
+                    {(params: JoinRoomParams) => <JoinRoom params={params} />}
+                  </Route>
+                  <Route>
+                    <RouteFallback />
+                  </Route>
+                </Switch>
+              </Suspense>
             </GameProvider>
           </Router>
         </KeyboardControls>

@@ -2,50 +2,51 @@ import Platform from '../physics/platform';
 import Goal from '../physics/goal';
 import BoxObstacle from '../physics/box-obstacle';
 import { useLevelContext } from '../providers/level-provider';
-import Ball from '../physics/ball';
 import LosePlane from '../physics/lose-plane';
-import useVector3 from '../../utils/use-vector3';
-import { useCallback, useRef } from 'react';
-import RigidBodyFollower from '../physics/rigid-body-follower';
-import { defaultCameraOffset } from '../../config/camera';
-import { RapierRigidBodyRef } from '../../types';
-
-function useThing<T>(defaultValue: T | null) {
-  return useRef<T>(defaultValue);
-}
+import { useCallback } from 'react';
+import { usePlayersList } from 'playroomkit';
+import Player from '../player';
+import FollowCamera from '../physics/follow-camera';
+import useMyPlayer from '../../multiplayer/use-my-player';
+import useSpawner from '../physics/use-spawner';
+import { RapierRigidBody } from '@react-three/rapier';
+import { Vector3Tuple } from 'three';
 
 export default function Level1() {
   const level = useLevelContext();
-  // const ballRef = useRef<BallRef>(null);
-  const ballStartPosition = useVector3([0, 3, -1]);
-  const ballRef = useThing<RapierRigidBodyRef>(null);
+  const playerList = usePlayersList();
+  const me = useMyPlayer();
 
-  const lose = useCallback(() => {
-    level.lose();
+  const spawnArea: Vector3Tuple = [4, 0, 0];
+  const spawnAreaOffset: Vector3Tuple = [0, 3, -1];
+  const spawner = useSpawner(spawnArea, spawnAreaOffset);
 
-    const ball = ballRef.current?.rigidBody();
-    if (ball) {
-      ball.sleep();
-      ball.resetTorques(false);
-      ball.resetTorques(false);
-      ball.setTranslation(ballStartPosition, true);
-    }
-  }, [ballRef, ballStartPosition, level]);
+  const lose = useCallback(
+    (ball: RapierRigidBody) => {
+      level.lose();
+      spawner.spawn(ball);
+      console.log('LOST');
+    },
+    [level, spawner]
+  );
+
+  const players = playerList.map((player) => {
+    const position = spawner.calculatePosition();
+    return (
+      <Player key={player.id} playerState={player} position={position}>
+        <FollowCamera enabled={player.id === me.id} />
+      </Player>
+    );
+  });
 
   return (
     <>
-      <Ball
-        position={[
-          ballStartPosition.x,
-          ballStartPosition.y,
-          ballStartPosition.z,
-        ]}
-        ref={ballRef}
-      />
-      <RigidBodyFollower focusRef={ballRef} offset={defaultCameraOffset} />
+      {players}
 
       <LosePlane width={100} depth={100} onHit={lose} />
-      <Platform size={[5, -35]} />
+      <group position={[0, 0, -35 * 0.5]}>
+        <Platform size={[5, 0.1, 35]} />
+      </group>
       <Goal
         position={[0, 1.25, -32]}
         size={[2.5, 2.5, 2.5]}

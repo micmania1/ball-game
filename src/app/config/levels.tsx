@@ -9,6 +9,18 @@ const levels = {
     url: '/',
     name: 'Start',
   },
+  creating_lobby: {
+    url: 'creating-lobby',
+    name: 'Creating Lobby',
+  },
+  lobby: {
+    url: '/lobby',
+    name: 'Lobby',
+  },
+  won: {
+    url: 'won',
+    name: 'Won',
+  },
   level1: {
     url: '/level-1',
     name: 'Level 1',

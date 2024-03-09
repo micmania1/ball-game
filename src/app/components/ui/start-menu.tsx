@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { defaultCameraOffset } from '../../config/camera';
 import useVector3 from '../../utils/use-vector3';
+import Button from './button';
+import { getRoomCode } from 'playroomkit';
 
 const Overlay = styled.div`
   position: fixed;
@@ -13,28 +15,14 @@ const Overlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 1em;
   background: rgba(0, 0, 0, 0.5);
 `;
 
-const StartButton = styled.button`
-  padding: 20px;
-  box-shadow: none;
-  border: 5px solid purple;
-  border-radius: 10px;
-  font-size: 32px;
-  font-weight: bold;
-  background-color: white;
-
-  &:hover {
-    background-color: #dedede;
-    cursor: pointer;
-  }
-`;
-
 export default function StartMenu() {
-  const { setLevel } = useGameContext();
   const camera = useThree((three) => three.camera);
   const focusPosition = useVector3();
+  const game = useGameContext();
 
   useEffect(() => {
     camera.position.set(...defaultCameraOffset);
@@ -44,7 +32,20 @@ export default function StartMenu() {
   return (
     <Html fullscreen prepend zIndexRange={[10]}>
       <Overlay>
-        <StartButton onClick={() => setLevel('level1')}>Start</StartButton>
+        <Button
+          onClick={() => {
+            game.startMultiplayer();
+          }}
+        >
+          Multiplayer
+        </Button>
+        <Button
+          onClick={() => {
+            game.startPrivate();
+          }}
+        >
+          Private
+        </Button>
       </Overlay>
     </Html>
   );

@@ -1,25 +1,25 @@
 import { interactionGroups, RigidBody } from '@react-three/rapier';
-import { Plane } from '@react-three/drei';
+import { Box, Plane } from '@react-three/drei';
 import * as THREE from 'three';
 import { collisionGroups } from '../../config/physics';
 
 type PlatformProps = {
-  size: THREE.Vector2Tuple;
+  size: THREE.Vector3Tuple;
 };
 
 export default function Platform({ size }: PlatformProps) {
-  const [width, length] = size;
+  const [width, height, depth] = size;
   return (
-    <group position={[0, 0, length * 0.5]}>
+    <group position={[0, height * 0.5, 0]}>
       <RigidBody
-        rotation={[Math.PI * 0.5, 0, 0]}
         restitution={0.5}
         friction={1}
         collisionGroups={collisionGroups.environment}
+        type="fixed"
       >
-        <Plane args={[width, length]}>
+        <Box args={[width, height, depth]}>
           <meshStandardMaterial color={0x555555} />
-        </Plane>
+        </Box>
       </RigidBody>
     </group>
   );

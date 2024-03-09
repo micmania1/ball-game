@@ -11,6 +11,10 @@ import PauseMenu from '../ui/pause-menu';
 import { KeyboardControls } from '../../config/keyboard-controls';
 import { Physics } from '@react-three/rapier';
 import { useGameContext } from './game-provider';
+import { getRoomCode } from 'playroomkit';
+import { Redirect } from 'wouter';
+import levels from '../../config/levels';
+import useRoomCode from '../../multiplayer/use-room-code';
 
 type LevelState = {
   isPaused: boolean;
@@ -32,6 +36,7 @@ export default function LevelProvider({ children }: LevelProviderProps) {
     (keys) => keys.pause
   );
   const game = useGameContext();
+  const roomCode = useRoomCode();
 
   useEffect(() => {
     if (wasPausePressed) {
@@ -48,7 +53,7 @@ export default function LevelProvider({ children }: LevelProviderProps) {
     game.won();
   }, [game]);
 
-  return (
+  return roomCode ? (
     <LevelContext.Provider
       value={{
         isPaused,
@@ -62,6 +67,8 @@ export default function LevelProvider({ children }: LevelProviderProps) {
         {children}
       </Physics>
     </LevelContext.Provider>
+  ) : (
+    <Redirect to={levels.start.url} />
   );
 }
 
