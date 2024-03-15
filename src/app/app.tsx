@@ -14,6 +14,9 @@ import { defaultCameraOffset } from './config/camera';
 import RouteFallback from './components/route-fallback';
 import JoinRoom, { JoinRoomParams } from './components/levels/join-room';
 import CenteredText from './components/ui/centered-text';
+import { Root } from '@react-three/uikit';
+import { Defaults } from './components/ui/theme';
+import LocalProfile from './components/providers/local-profile';
 
 const LevelProvider = lazy(
   () => import('./components/providers/level-provider')
@@ -35,45 +38,53 @@ const StyledApp = styled.div`
 export function App() {
   return (
     <StyledApp>
-      <Canvas camera={{ position: defaultCameraOffset }}>
-        <ambientLight args={[0x404040, 20]} />
-        <directionalLight position={[0, 20, 20]} />
-        <Sky />
+      <LocalProfile>
+        <Canvas camera={{ position: defaultCameraOffset }}>
+          <ambientLight args={[0x404040, 20]} />
+          <directionalLight position={[0, 20, 20]} />
+          <Sky />
 
-        <KeyboardControls map={keyboardControls}>
-          <Router hook={useHashLocation}>
-            <GameProvider levelConfig={levels}>
-              <Suspense fallback={<Loading />}>
-                <Switch>
-                  <Route path={levels.start.url}>
-                    <StartMenu />
-                  </Route>
-                  <Route path={levels.creating_lobby.url}>
-                    <CenteredText>Creating game...</CenteredText>
-                  </Route>
-                  <Route path={levels.lobby.url}>
-                    <Lobby />
-                  </Route>
-                  <Route path={levels.won.url}>
-                    <CenteredText>Somebody won!</CenteredText>
-                  </Route>
-                  <Route path={levels.level1.url}>
-                    <LevelProvider>
-                      <Level1 />
-                    </LevelProvider>
-                  </Route>
-                  <Route path="/join/:roomCode">
-                    {(params: JoinRoomParams) => <JoinRoom params={params} />}
-                  </Route>
-                  <Route>
-                    <RouteFallback />
-                  </Route>
-                </Switch>
-              </Suspense>
-            </GameProvider>
-          </Router>
-        </KeyboardControls>
-      </Canvas>
+          <Root sizeX={2} sizeY={1}>
+            <Defaults>
+              <KeyboardControls map={keyboardControls}>
+                <Router hook={useHashLocation}>
+                  <GameProvider levelConfig={levels}>
+                    <Suspense fallback={<Loading />}>
+                      <Switch>
+                        <Route path={levels.start.url}>
+                          <StartMenu />
+                        </Route>
+                        <Route path={levels.creating_lobby.url}>
+                          <CenteredText>Creating game...</CenteredText>
+                        </Route>
+                        <Route path={levels.lobby.url}>
+                          <Lobby />
+                        </Route>
+                        <Route path={levels.won.url}>
+                          <CenteredText>Somebody won!</CenteredText>
+                        </Route>
+                        <Route path={levels.level1.url}>
+                          <LevelProvider>
+                            <Level1 />
+                          </LevelProvider>
+                        </Route>
+                        <Route path="/join/:roomCode">
+                          {(params: JoinRoomParams) => (
+                            <JoinRoom params={params} />
+                          )}
+                        </Route>
+                        <Route>
+                          <RouteFallback />
+                        </Route>
+                      </Switch>
+                    </Suspense>
+                  </GameProvider>
+                </Router>
+              </KeyboardControls>
+            </Defaults>
+          </Root>
+        </Canvas>
+      </LocalProfile>
     </StyledApp>
   );
 }

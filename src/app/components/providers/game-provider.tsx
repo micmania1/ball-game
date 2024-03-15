@@ -5,7 +5,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { useLocation } from 'wouter';
@@ -15,11 +14,12 @@ import useVector3 from '../../utils/use-vector3';
 import {
   getRoomCode,
   insertCoin,
-  isHost,
   Joystick,
+  me,
   onPlayerJoin,
   useMultiplayerState,
 } from 'playroomkit';
+import { useLocalProfileColor, useLocalProfileName } from './local-profile';
 
 type GameProviderProps = {
   children: ReactNode;
@@ -37,6 +37,7 @@ type GameState = {
   setLevel(level: LevelName): void;
   won(): void;
   joysticks: Map<string, Joystick>;
+  isPrivate: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -50,9 +51,10 @@ export default function GameProvider({
   const camera = useThree((three) => three.camera);
   const joysticks = useMemo(() => new Map(), []);
   const defaultCameraFocus = useVector3();
-  const availableColorsRef = useRef(['red', 'lightgreen', 'blue', 'yellow']);
   const [isPrivate, setIsPrivate] = useState(false);
   const isTouchEnabled = 'ontouchstart' in document.documentElement;
+  const [localName] = useLocalProfileName();
+  const [localColor] = useLocalProfileColor();
 
   const [multiplayerLevel, setMultiplayerLevel]: [
     LevelName,
@@ -78,74 +80,65 @@ export default function GameProvider({
 
   useEffect(() => {
     onPlayerJoin((player) => {
-      if (isHost()) {
-        player.setState('color', availableColorsRef.current.shift());
-      }
-      player.setState('ready', true);
+      const currentPlayer = me();
+      if (currentPlayer.id === player.id) {
+        player.setState('ready', true);
 
-      console.log(player.getState('joystickEnabled'));
-      if (player.getState('joystickEnabled')) {
-        const joystick = new Joystick(player, { type: 'angular' });
-        joysticks.set(player.id, joystick);
-      }
-
-      player.onQuit(() => {
-        joysticks.delete(player.id);
-        const color = player.getState('color');
-        if (isHost() && color && !availableColorsRef.current.includes(color)) {
-          availableColorsRef.current.push(color);
+        if (player.getState('joystickEnabled')) {
+          const joystick = new Joystick(player, { type: 'angular' });
+          joysticks.set(player.id, joystick);
         }
-      });
+
+        player.onQuit(() => {
+          joysticks.delete(player.id);
+        });
+      }
     });
   }, [joysticks]);
+
+  const defaultPlayerState = useMemo(() => {
+    return {
+      color: localColor,
+      name: localName,
+      forward: 0,
+      sideways: 0,
+      position: [0, 3, -1],
+      rotation: [0, 0, 0],
+      ready: false,
+      joystickEnabled: isTouchEnabled,
+    };
+  }, [isTouchEnabled, localColor, localName]);
 
   const join = useCallback(
     async (roomCode: string) => {
       setIsPrivate(false);
-      setLocation('lobby');
       await insertCoin(
         {
           skipLobby: true,
           roomCode,
-          defaultPlayerStates: {
-            color: availableColorsRef.current[0],
-            forward: 0,
-            sideways: 0,
-            position: [0, 3, -1],
-            rotation: [0, 0, 0],
-            ready: false,
-            joystickEnabled: isTouchEnabled,
-          },
         },
         () => {
           setLevel('lobby');
         }
       );
+      setLocation('lobby');
     },
-    [isTouchEnabled, setLevel, setLocation]
+    [setLevel, setLocation]
   );
 
   const startMultiplayer = useCallback(
     async (settings: GameInit = {}) => {
       setIsPrivate(settings.isPrivate ?? false);
-      setLocation('creating-lobby');
       if (getRoomCode()) {
         setLevel(settings.isPrivate ? 'level1' : 'lobby');
         return;
       }
+
       await insertCoin(
         {
           skipLobby: true,
           maxPlayersPerRoom: isPrivate ? 1 : 4,
-          defaultPlayerStates: {
-            color: availableColorsRef.current[0],
-            forward: 0,
-            sideways: 0,
-            position: [0, 3, -1],
-            rotation: [0, 0, 0],
-            ready: false,
-            joystickEnabled: isTouchEnabled,
-          },
+          defaultPlayerStates: defaultPlayerState,
         },
         () => {
           console.log('launch');
@@ -156,8 +149,9 @@ export default function GameProvider({
           }
         }
       );
+      setLocation('creating-lobby');
     },
-    [isPrivate, isTouchEnabled, setLevel, setLocation]
+    [defaultPlayerState, isPrivate, setLevel, setLocation]
   );
 
   const startPrivate = useCallback(async () => {
@@ -171,7 +165,15 @@ export default function GameProvider({
 
   return (
     <GameContext.Provider
-      value={{ startMultiplayer, startPrivate, join, setLevel, won, joysticks }}
+      value={{
+        startMultiplayer,
+        startPrivate,
+        join,
+        setLevel,
+        won,
+        joysticks,
+        isPrivate,
+      }}
     >
       {children}
     </GameContext.Provider>
@@ -185,4 +187,9 @@ export function useGameContext() {
 export function useJoystick(key: string) {
   const game = useGameContext();
   return game.joysticks.get(key);
+}
+
+export function useIsPrivateGame() {
+  const game = useGameContext();
+  return game.isPrivate;
 }

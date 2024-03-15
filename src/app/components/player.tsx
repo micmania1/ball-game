@@ -2,16 +2,19 @@ import { PlayerState, useIsHost, usePlayerState } from 'playroomkit';
 import useVector3 from '../utils/use-vector3';
 import { ReactNode, useCallback, useRef } from 'react';
 import { RapierRigidBody, RigidBody, useRapier } from '@react-three/rapier';
-import { useKeyboardControls } from '@react-three/drei';
+import { Billboard, Text, useKeyboardControls } from '@react-three/drei';
 import { KeyboardControls } from '../config/keyboard-controls';
 import Ball from './physics/ball';
-import { collisionGroups } from '../config/physics';
+import { collisionGroups, restitution } from '../config/physics';
 import * as THREE from 'three';
 import useQuaternion from '../utils/use-quaternion';
 import useHostFrame from '../multiplayer/use-host-frame';
 import useNonHostFrame from '../multiplayer/use-non-host-frame';
 import useCurrentPlayerFrame from '../multiplayer/use-current-player-frame';
-import { useJoystick } from './providers/game-provider';
+import { useIsPrivateGame, useJoystick } from './providers/game-provider';
+// import { Text } from '@react-three/uikit';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Card } from './ui/card';
 
 function int(b: boolean) {
   return b ? 1 : 0;
@@ -20,7 +23,7 @@ function int(b: boolean) {
 type PlayerProps = {
   playerState: PlayerState;
   position?: THREE.Vector3Tuple;
-  children: ReactNode;
+  children?: ReactNode;
 };
 export default function Player({
   playerState,
@@ -35,7 +38,11 @@ export default function Player({
   const isHost = useIsHost();
   const visualPosition = useVector3();
   const visualRotation = useQuaternion();
-  const [color] = usePlayerState(playerState, 'color', 'white');
+  const [color] = usePlayerState(playerState, 'color', 0xff0000);
+  const [name] = usePlayerState(playerState, 'name', '');
+  const playerNameRef = useRef<THREE.Group>(null);
+  const camera = useThree((three) => three.camera);
+  const isPrivateGame = useIsPrivateGame();
 
   useHostFrame((_, delta) => {
     const rigidBody = rigidBodyRef.current;
@@ -112,6 +119,16 @@ export default function Player({
     }
   });
 
+  useFrame(() => {
+    const playerName = playerNameRef.current;
+    const ball = ballRef.current;
+    if (playerName && ball && camera) {
+      playerName.lookAt(camera.position);
+      playerName.position.setFromMatrixPosition(ball.matrixWorld);
+      playerName.position.y += 0.5;
+    }
+  });
+
   const ready = playerState.getState('ready');
   if (!ready) {
     return null;
@@ -123,21 +140,35 @@ export default function Player({
     </Ball>
   );
 
+  const playerName = isPrivateGame ? null : (
+    <Billboard ref={playerNameRef}>
+      <Text fontSize={0.3} outlineColor="black" color="white">
+        {name}
+      </Text>
+    </Billboard>
+  );
+
   return isHost ? (
-    <RigidBody
-      colliders={'ball'}
-      position={position}
-      mass={1}
-      angularDamping={1}
-      linearDamping={1}
-      restitution={0.5}
-      friction={10}
-      ref={rigidBodyRef}
-      collisionGroups={collisionGroups.ball}
-    >
-      {ball}
-    </RigidBody>
+    <>
+      {playerName}
+      <RigidBody
+        colliders={'ball'}
+        position={position}
+        mass={1}
+        angularDamping={1}
+        linearDamping={0.75}
+        restitution={restitution.ball}
+        friction={10}
+        ref={rigidBodyRef}
+        collisionGroups={collisionGroups.ball}
+      >
+        {ball}
+      </RigidBody>
+    </>
   ) : (
-    ball
+    <>
+      {playerName}
+      {ball}
+    </>
   );
 }

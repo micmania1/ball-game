@@ -1,9 +1,10 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { Object3D, Vector3Tuple } from 'three';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import useVector3 from '../../utils/use-vector3';
 import { defaultCameraOffset } from '../../config/camera';
 import useQuaternion from '../../utils/use-quaternion';
+import { PerspectiveCamera } from '@react-three/drei';
 
 type CameraFocusProps = {
   offset?: Vector3Tuple;
@@ -17,6 +18,14 @@ export default function FollowCamera({
   const focusPosition = useVector3();
   const objectRef = useRef<Object3D>(null);
   const q = useQuaternion();
+
+  useEffect(() => {
+    const object = objectRef.current;
+    const focus = object?.parent;
+    if (focus) {
+      camera.lookAt(focus.position);
+    }
+  }, [camera]);
 
   useFrame(() => {
     const object = objectRef.current;
@@ -38,5 +47,5 @@ export default function FollowCamera({
     }
   });
 
-  return enabled ? <object3D ref={objectRef} /> : null;
+  return enabled ? <object3D ref={objectRef}></object3D> : null;
 }

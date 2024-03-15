@@ -12,6 +12,8 @@
     "@react-three/drei": "^9.97.1",
     "@react-three/fiber": "^8.15.16",
     "@react-three/rapier": "^1.2.1",
+    "@react-three/uikit": "^0.1.14",
+    "@react-three/uikit-lucide": "^0.1.14",
     "@types/three": "^0.161.2",
     "leva": "^0.9.35",
     "playroomkit": "^0.0.68",

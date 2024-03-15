@@ -1,5 +1,5 @@
 import { Redirect } from 'wouter';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGameContext } from '../providers/game-provider';
 import levels from '../../config/levels';
 
@@ -14,13 +14,13 @@ export default function JoinRoom({ params }: RouteFallbackProps) {
   const game = useGameContext();
   const hasAttemptedJoinRef = useRef(false);
 
-  const hasAttemptedJoin = hasAttemptedJoinRef.current;
-  if (!hasAttemptedJoin && params.roomCode) {
-    hasAttemptedJoinRef.current = true;
-    game.join(params.roomCode);
+  useEffect(() => {
+    const hasAttemptedJoin = hasAttemptedJoinRef.current;
+    if (!hasAttemptedJoin && params.roomCode) {
+      hasAttemptedJoinRef.current = true;
+      game.join(params.roomCode);
+    }
+  }, [game, params.roomCode]);
 
-    return <Redirect to={levels.lobby.url} />;
-  }
-
-  return <Redirect to={levels.start.url} />;
+  return params.roomCode ? null : <Redirect to={levels.start.url} />;
 }

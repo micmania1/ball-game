@@ -1,6 +1,6 @@
-import { interactionGroups, RigidBody } from '@react-three/rapier';
+import { RigidBody } from '@react-three/rapier';
 import { Box } from '@react-three/drei';
-import { collisionGroups } from '../../config/physics';
+import { collisionGroups, restitution } from '../../config/physics';
 
 type BoxObstacleProps = {
   row: number;
@@ -27,7 +27,7 @@ export default function BoxObstacle({
       <RigidBody
         type="fixed"
         position={[posX, 0.5, posZ]}
-        restitution={1}
+        restitution={restitution.obstacle}
         friction={1}
         collisionGroups={collisionGroups.obstacle}
       >

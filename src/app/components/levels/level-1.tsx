@@ -4,18 +4,17 @@ import BoxObstacle from '../physics/box-obstacle';
 import { useLevelContext } from '../providers/level-provider';
 import LosePlane from '../physics/lose-plane';
 import { useCallback } from 'react';
-import { usePlayersList } from 'playroomkit';
+import { myPlayer, usePlayersList } from 'playroomkit';
 import Player from '../player';
 import FollowCamera from '../physics/follow-camera';
-import useMyPlayer from '../../multiplayer/use-my-player';
 import useSpawner from '../physics/use-spawner';
 import { RapierRigidBody } from '@react-three/rapier';
 import { Vector3Tuple } from 'three';
+import { PerspectiveCamera } from '@react-three/drei';
 
 export default function Level1() {
   const level = useLevelContext();
   const playerList = usePlayersList();
-  const me = useMyPlayer();
 
   const spawnArea: Vector3Tuple = [4, 0, 0];
   const spawnAreaOffset: Vector3Tuple = [0, 3, -1];
@@ -32,6 +31,7 @@ export default function Level1() {
 
   const players = playerList.map((player) => {
     const position = spawner.calculatePosition();
+    const me = myPlayer();
     return (
       <Player key={player.id} playerState={player} position={position}>
         <FollowCamera enabled={player.id === me.id} />

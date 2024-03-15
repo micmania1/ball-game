@@ -13,3 +13,9 @@ export const collisionGroups = {
   goal: interactionGroups(goal, [ball]),
   lose: interactionGroups(lose, [ball]),
 };
+
+export const restitution = {
+  floor: 0.2,
+  obstacle: 0.001,
+  ball: 1,
+};

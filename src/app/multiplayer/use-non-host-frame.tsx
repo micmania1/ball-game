@@ -1,11 +1,9 @@
-import { useIsHost } from 'playroomkit';
 import { RenderCallback, useFrame } from '@react-three/fiber';
+import { isHost } from 'playroomkit';
 
 export default function useNonHostFrame(callback: RenderCallback) {
-  const isHost = useIsHost();
-
   useFrame((three, delta, xrFrame) => {
-    if (!isHost) {
+    if (!isHost()) {
       callback(three, delta, xrFrame);
     }
   });

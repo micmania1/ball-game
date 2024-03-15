@@ -1,52 +1,134 @@
-import styled from 'styled-components';
-import { Html } from '@react-three/drei';
 import { useGameContext } from '../providers/game-provider';
-import { useEffect } from 'react';
-import { useThree } from '@react-three/fiber';
-import { defaultCameraOffset } from '../../config/camera';
-import useVector3 from '../../utils/use-vector3';
-import Button from './button';
-import { getRoomCode } from 'playroomkit';
-
-const Overlay = styled.div`
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-  background: rgba(0, 0, 0, 0.5);
-`;
+import { useCallback, useRef, useState } from 'react';
+import { Container, Fullscreen, Text } from '@react-three/uikit';
+import { Button } from './button';
+import { Card, CardContent } from './card';
+import { UserRound, UsersRound } from '@react-three/uikit-lucide';
+import {
+  Dialog,
+  DialogAnchor,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './dialog';
+import { Label } from './label';
+import { PerspectiveCamera } from '@react-three/drei';
+import Input from './input';
 
 export default function StartMenu() {
-  const camera = useThree((three) => three.camera);
-  const focusPosition = useVector3();
   const game = useGameContext();
+  const [isEnteringCode, setIsEnteringCode] = useState(false);
+  const isJoiningRef = useRef(false);
+  const [code, setCode] = useState('');
+  const codeLength = 4;
 
-  useEffect(() => {
-    camera.position.set(...defaultCameraOffset);
-    camera.lookAt(focusPosition);
-  }, [camera, camera.position, focusPosition]);
+  const join = useCallback(
+    (code: string) => {
+      const isJoining = isJoiningRef.current;
+      if (!isJoining) {
+        game.join(code);
+        isJoiningRef.current = true;
+      }
+    },
+    [game]
+  );
 
   return (
-    <Html fullscreen prepend zIndexRange={[10]}>
-      <Overlay>
-        <Button
-          onClick={() => {
-            game.startMultiplayer();
-          }}
+    <>
+      <PerspectiveCamera makeDefault />
+      <Fullscreen justifyContent="center" alignItems="center">
+        <Card
+          flexDirection="column"
+          width="100%"
+          maxWidth={300}
+          backgroundOpacity={0.8}
         >
-          Multiplayer
-        </Button>
-        <Button
-          onClick={() => {
-            game.startPrivate();
-          }}
-        >
-          Private
-        </Button>
-      </Overlay>
-    </Html>
+          <CardContent
+            flexDirection="column"
+            gap={20}
+            width="100%"
+            paddingX={20}
+            paddingY={20}
+          >
+            <Text
+              marginBottom={24}
+              fontSize={48}
+              fontWeight="bold"
+              alignSelf="center"
+            >
+              Ball Game
+            </Text>
+            <Button
+              onClick={() => game.startMultiplayer()}
+              size="lg"
+              width={'100%'}
+              gap={4}
+            >
+              <UsersRound />
+              <Text>Create Lobby</Text>
+            </Button>
+            <Button
+              size="lg"
+              width={'100%'}
+              gap={4}
+              onClick={() => setIsEnteringCode(true)}
+            >
+              <UsersRound />
+              <Text>Join Lobby</Text>
+            </Button>
+            <Button
+              onClick={() => game.startPrivate()}
+              size="lg"
+              width={'100%'}
+              gap={4}
+            >
+              <UserRound />
+              <Text>Single Player</Text>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <DialogAnchor>
+          <Dialog
+            open={isEnteringCode}
+            onOpenChange={(isOpen) => setIsEnteringCode(isOpen)}
+          >
+            <DialogContent sm={{ maxWidth: 600 }}>
+              <DialogHeader>
+                <DialogTitle>
+                  <Text>Join Lobby</Text>
+                </DialogTitle>
+                <DialogDescription>
+                  <Text>Enter a code to join the lobby.</Text>
+                </DialogDescription>
+              </DialogHeader>
+              <Container gap={16} paddingY={16} alignItems="center">
+                <Label>
+                  <Text>Code</Text>
+                </Label>
+                <Input
+                  type="text"
+                  name="code"
+                  onChange={(e) => setCode(e.currentTarget.value)}
+                  maxLength={codeLength}
+                  backgroundColor={'white'}
+                  borderColor={'black'}
+                  border={1}
+                  width={260}
+                  autoFocus
+                />
+              </Container>
+              <DialogFooter>
+                <Button onClick={() => join(code)}>
+                  <Text>Join</Text>
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </DialogAnchor>
+      </Fullscreen>
+    </>
   );
 }
