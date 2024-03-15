@@ -115,7 +115,7 @@ export default function GameProvider({
       await insertCoin(
         {
           skipLobby: true,
-          roomCode,
+          roomCode: roomCode.toUpperCase(),
         },
         () => {
           setLevel('lobby');

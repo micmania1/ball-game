@@ -4,6 +4,7 @@ import {
   FocusEvent,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   useTransition,
@@ -38,8 +39,32 @@ export default function Input({
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(String(defaultValue ?? ''));
-  const [focused, setFocused] = useState(false);
-  const [hovered, setHovered] = useState(false);
+
+  const input = useMemo(() => {
+    return (
+      <input
+        onFocus={(e) => {
+          if (onFocus) {
+            onFocus(e);
+          }
+        }}
+        onBlur={(e) => {
+          if (onBlur) {
+            onBlur(e);
+          }
+        }}
+        onChange={(e) => {
+          setValue(e.currentTarget.value);
+          if (onChange) {
+            onChange(e);
+          }
+        }}
+        defaultValue={defaultValue}
+        {...props}
+        ref={inputRef}
+      />
+    );
+  }, [defaultValue, onBlur, onChange, onFocus, props]);
 
   return (
     <>
@@ -48,8 +73,6 @@ export default function Input({
         onClick={(e) => {
           inputRef.current?.focus();
         }}
-        onPointerEnter={(e) => setHovered(true)}
-        onPointerLeave={(e) => setHovered(false)}
         padding={16}
         alignItems="center"
         justifyContent="center"
@@ -57,31 +80,7 @@ export default function Input({
         <Text>{value}</Text>
       </Button>
       <Html>
-        <NotVisible>
-          <input
-            onFocus={(e) => {
-              setFocused(true);
-              if (onFocus) {
-                onFocus(e);
-              }
-            }}
-            onBlur={(e) => {
-              setFocused(false);
-              if (onBlur) {
-                onBlur(e);
-              }
-            }}
-            onChange={(e) => {
-              setValue(e.currentTarget.value);
-              if (onChange) {
-                onChange(e);
-              }
-            }}
-            defaultValue={defaultValue}
-            {...props}
-            ref={inputRef}
-          />
-        </NotVisible>
+        <NotVisible>{input}</NotVisible>
       </Html>
     </>
   );
