@@ -43,7 +43,6 @@ export default function GameProvider({
   const camera = useThree((three) => three.camera);
   const defaultCameraFocus = useVector3();
   const [isPrivate, setIsPrivate] = useState(false);
-  const isTouchEnabled = 'ontouchstart' in document.documentElement;
   const [localName] = useLocalProfileName();
   const [localColor] = useLocalProfileColor();
 
@@ -77,10 +76,8 @@ export default function GameProvider({
       sideways: 0,
       position: [0, 3, -1],
       rotation: [0, 0, 0],
-      // ready: false,
-      joystickEnabled: isTouchEnabled,
     };
-  }, [isTouchEnabled, localColor, localName]);
+  }, [localColor, localName]);
 
   const join = useCallback(
     async (roomCode: string) => {
