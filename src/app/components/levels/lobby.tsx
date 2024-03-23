@@ -1,4 +1,4 @@
-import { Box, Html, PerspectiveCamera } from '@react-three/drei';
+import { Box, PerspectiveCamera } from '@react-three/drei';
 import {
   getRoomCode,
   isHost,
@@ -37,19 +37,6 @@ import {
 } from '../providers/local-profile';
 import { Input } from '../ui/input';
 import JoystickProvider from '../providers/joystick-provider';
-import styled from 'styled-components';
-
-const JoystickArea = styled.div`
-  position: absolute;
-  left: 0;
-  bottom: 100px;
-  width: 100%;
-  height: 120px;
-  background: rgba(255, 0, 0, 0.5);
-  z-index: 1000;
-  margin: 0;
-  padding: 0;
-`;
 
 export default function Lobby() {
   const playerList = usePlayersList();
@@ -57,56 +44,60 @@ export default function Lobby() {
   const platformSize = 10;
   const spawnArea: Vector3Tuple = [platformSize * 0.8, 5, platformSize * 0.8];
   const spawner = useSpawner(spawnArea);
-  const spawnPositionMap = useRef<Map<string, Vector3Tuple>>(new Map());
 
   // We do this to prevent spawnPosition being recalculated every time causing all players to re-render
   const players = useMemo(() => {
-    const map = spawnPositionMap.current;
-    return playerList.map((playerState) => ({
-      state: playerState,
-      spawnPosition: map.get(playerState.id) ?? spawner.calculatePosition(),
-    }));
+    const map = spawner.map();
+    return playerList.map((playerState) => {
+      const spawnPosition =
+        map.get(playerState.id) ?? spawner.calculatePosition();
+      map.set(playerState.id, spawnPosition);
+      return {
+        state: playerState,
+        spawnPosition,
+      };
+    });
   }, [playerList, spawner]);
 
   const roomCode = getRoomCode();
   return roomCode ? (
-    <>
-      <JoystickProvider mode="dynamic" zoneSelector="#joystick-lobby-zone">
-        <group>
-          <PerspectiveCamera
-            position={[platformSize, platformSize, platformSize]}
-            rotation={[-0.8, 0.56, 0.52]}
-            makeDefault
-          />
-          <Physics>
-            <Platform size={[platformSize, 0.1, platformSize]} />
-            {players.map((player) => (
-              <Player
-                key={player.state.id}
-                playerState={player.state}
-                position={player.spawnPosition}
-              ></Player>
-            ))}
-            <RigidBody
-              type="fixed"
-              position={[0, -10, 0]}
-              sensor
-              collisionGroups={collisionGroups.environment}
-              onIntersectionEnter={(e) => {
-                const ball = e.other.rigidBody;
-                if (ball) {
-                  spawner.spawn(ball);
-                }
-              }}
-              includeInvisible
-            >
-              <Box args={[50, 1, 50]} visible={false} />
-            </RigidBody>
-          </Physics>
-        </group>
-        <LobbyUI roomCode={roomCode} />
-      </JoystickProvider>
-    </>
+    <JoystickProvider mode="dynamic" zoneSelector="#joystick-lobby-zone">
+      <group>
+        <PerspectiveCamera
+          position={[platformSize, platformSize, platformSize]}
+          rotation={[-0.8, 0.56, 0.52]}
+          makeDefault
+        />
+        <Physics>
+          <Platform size={[platformSize, 0.1, platformSize]} />
+          {players.map((player) => (
+            <Player
+              key={player.state.id}
+              id={player.state.id}
+              playerState={player.state}
+              position={player.spawnPosition}
+            />
+          ))}
+
+          <RigidBody
+            type="fixed"
+            position={[0, -10, 0]}
+            sensor
+            collisionGroups={collisionGroups.environment}
+            onIntersectionEnter={(e) => {
+              const ball = e.other.rigidBody;
+              if (ball) {
+                spawner.spawn(ball);
+              }
+            }}
+            includeInvisible
+          >
+            <Box args={[50, 1, 50]} visible={false} />
+          </RigidBody>
+        </Physics>
+      </group>
+      <LobbyUI roomCode={roomCode} />
+    </JoystickProvider>
   ) : (
     <Redirect to={levels.start.url} />
   );

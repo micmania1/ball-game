@@ -3,7 +3,7 @@ import Goal from '../physics/goal';
 import BoxObstacle from '../physics/box-obstacle';
 import { useLevelContext } from '../providers/level-provider';
 import LosePlane from '../physics/lose-plane';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { myPlayer, usePlayersList } from 'playroomkit';
 import Player from '../player';
 import FollowCamera from '../physics/follow-camera';
@@ -29,15 +29,27 @@ export default function Level1() {
     [level, spawner]
   );
 
-  const players = playerList.map((player) => {
-    const position = spawner.calculatePosition();
-    const me = myPlayer();
-    return (
-      <Player key={player.id} playerState={player} position={position}>
-        <FollowCamera enabled={player.id === me.id} />
-      </Player>
-    );
-  });
+  const players = useMemo(
+    () =>
+      playerList.map((player) => {
+        const map = spawner.map();
+        const position = map.get(player.id) ?? spawner.calculatePosition();
+        map.set(player.id, position);
+
+        const me = myPlayer();
+        return (
+          <Player
+            key={player.id}
+            id={player.id}
+            playerState={player}
+            position={position}
+          >
+            <FollowCamera enabled={player.id === me.id} />
+          </Player>
+        );
+      }),
+    [playerList, spawner]
+  );
 
   return (
     <>

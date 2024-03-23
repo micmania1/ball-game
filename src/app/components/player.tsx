@@ -23,11 +23,13 @@ type PlayerProps = {
   playerState: PlayerState;
   position?: THREE.Vector3Tuple;
   children?: ReactNode;
+  id?: string;
 };
 export default function Player({
   playerState,
   position = [0, 0, 0],
   children,
+  id,
 }: PlayerProps) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const ballRef = useRef<THREE.Mesh>(null);
@@ -38,7 +40,7 @@ export default function Player({
   const visualPosition = useVector3();
   const visualRotation = useQuaternion();
   const [color] = usePlayerState(playerState, 'color', 0xff0000);
-  const [name] = usePlayerState(playerState, 'name', '');
+  const [playerName] = usePlayerState(playerState, 'name', '');
   const playerNameRef = useRef<THREE.Group>(null);
   const camera = useThree((three) => three.camera);
   const isPrivateGame = useIsPrivateGame();
@@ -128,29 +130,25 @@ export default function Player({
     }
   });
 
-  const ready = playerState.getState('ready');
-  if (!ready) {
-    return null;
-  }
-
   const ball = (
     <Ball color={color} ref={ballRef}>
       {children}
     </Ball>
   );
 
-  const playerName = isPrivateGame ? null : (
+  const playerNameBillboard = isPrivateGame ? null : (
     <Billboard ref={playerNameRef}>
       <Text fontSize={0.3} outlineColor="black" color="white">
-        {name}
+        {playerName}
       </Text>
     </Billboard>
   );
 
   return isHost ? (
     <>
-      {playerName}
+      {playerNameBillboard}
       <RigidBody
+        name={id}
         colliders={'ball'}
         position={position}
         mass={1}
@@ -166,7 +164,7 @@ export default function Player({
     </>
   ) : (
     <>
-      {playerName}
+      {playerNameBillboard}
       {ball}
     </>
   );

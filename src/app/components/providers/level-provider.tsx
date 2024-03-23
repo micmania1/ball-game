@@ -32,17 +32,8 @@ interface LevelProviderProps {
 
 export default function LevelProvider({ children }: LevelProviderProps) {
   const [isPaused, setPaused] = useState(false);
-  const wasPausePressed = useKeyboardControls<KeyboardControls>(
-    (keys) => keys.pause
-  );
   const game = useGameContext();
   const roomCode = getRoomCode();
-
-  useEffect(() => {
-    if (wasPausePressed) {
-      setPaused((pause) => !pause);
-    }
-  }, [wasPausePressed, setPaused]);
 
   const lose = useCallback(() => {
     console.log('Lose');

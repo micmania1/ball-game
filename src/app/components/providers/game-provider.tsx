@@ -11,13 +11,7 @@ import { useLocation } from 'wouter';
 import { LevelName, Levels } from '../../config/levels';
 import { useThree } from '@react-three/fiber';
 import useVector3 from '../../utils/use-vector3';
-import {
-  getRoomCode,
-  insertCoin,
-  me,
-  onPlayerJoin,
-  useMultiplayerState,
-} from 'playroomkit';
+import { getRoomCode, insertCoin, useMultiplayerState } from 'playroomkit';
 import { useLocalProfileColor, useLocalProfileName } from './local-profile';
 
 type GameProviderProps = {
@@ -75,15 +69,6 @@ export default function GameProvider({
     setLevel(isPrivate ? 'start' : 'lobby');
   }, [camera, defaultCameraFocus, isPrivate, setLevel]);
 
-  useEffect(() => {
-    onPlayerJoin((player) => {
-      const currentPlayer = me();
-      if (currentPlayer.id === player.id) {
-        player.setState('ready', true);
-      }
-    });
-  }, []);
-
   const defaultPlayerState = useMemo(() => {
     return {
       color: localColor,
@@ -92,7 +77,7 @@ export default function GameProvider({
       sideways: 0,
       position: [0, 3, -1],
       rotation: [0, 0, 0],
-      ready: false,
+      // ready: false,
       joystickEnabled: isTouchEnabled,
     };
   }, [isTouchEnabled, localColor, localName]);

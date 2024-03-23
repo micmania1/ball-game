@@ -39,12 +39,12 @@ export default function JoystickProvider({
       zone.style.display = 'block';
     }
 
-    console.log({ zone });
     const manager = nipplejs.create({
       mode: 'dynamic',
       threshold: 0.2,
       zone: zone ?? undefined,
     });
+
     if (manager) {
       manager.on('start', (e) => {
         isPressedRef.current = true;
@@ -73,7 +73,7 @@ export default function JoystickProvider({
         zone.style.display = 'none';
       }
     };
-  }, []);
+  }, [zoneSelector]);
 
   const isJoystickPressed = useCallback(() => isPressedRef.current, []);
   const angle = useCallback(() => angleRef.current, []);
