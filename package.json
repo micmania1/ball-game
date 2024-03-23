@@ -16,6 +16,7 @@
     "@react-three/uikit-lucide": "^0.1.14",
     "@types/three": "^0.161.2",
     "leva": "^0.9.35",
+    "nipplejs": "^0.10.1",
     "playroomkit": "^0.0.68",
     "react": "18.2.0",
     "react-dom": "18.2.0",

@@ -14,7 +14,6 @@ import useVector3 from '../../utils/use-vector3';
 import {
   getRoomCode,
   insertCoin,
-  Joystick,
   me,
   onPlayerJoin,
   useMultiplayerState,
@@ -36,7 +35,6 @@ type GameState = {
   join(roomCode: string): void;
   setLevel(level: LevelName): void;
   won(): void;
-  joysticks: Map<string, Joystick>;
   isPrivate: boolean;
 };
 
@@ -49,7 +47,6 @@ export default function GameProvider({
 }: GameProviderProps) {
   const [, setLocation] = useLocation();
   const camera = useThree((three) => three.camera);
-  const joysticks = useMemo(() => new Map(), []);
   const defaultCameraFocus = useVector3();
   const [isPrivate, setIsPrivate] = useState(false);
   const isTouchEnabled = 'ontouchstart' in document.documentElement;
@@ -83,18 +80,9 @@ export default function GameProvider({
       const currentPlayer = me();
       if (currentPlayer.id === player.id) {
         player.setState('ready', true);
-
-        if (player.getState('joystickEnabled')) {
-          const joystick = new Joystick(player, { type: 'angular' });
-          joysticks.set(player.id, joystick);
-        }
-
-        player.onQuit(() => {
-          joysticks.delete(player.id);
-        });
       }
     });
-  }, [joysticks]);
+  }, []);
 
   const defaultPlayerState = useMemo(() => {
     return {
@@ -171,7 +159,6 @@ export default function GameProvider({
         join,
         setLevel,
         won,
-        joysticks,
         isPrivate,
       }}
     >
@@ -182,11 +169,6 @@ export default function GameProvider({
 
 export function useGameContext() {
   return useContext(GameContext);
-}
-
-export function useJoystick(key: string) {
-  const game = useGameContext();
-  return game.joysticks.get(key);
 }
 
 export function useIsPrivateGame() {

@@ -14,6 +14,7 @@ import { useGameContext } from './game-provider';
 import { Redirect } from 'wouter';
 import levels from '../../config/levels';
 import { getRoomCode } from 'playroomkit';
+import JoystickProvider from './joystick-provider';
 
 type LevelState = {
   isPaused: boolean;
@@ -63,7 +64,9 @@ export default function LevelProvider({ children }: LevelProviderProps) {
     >
       <Physics paused={isPaused}>
         <PauseMenu />
-        {children}
+        <JoystickProvider mode="dynamic" zoneSelector="#joystick-level-zone">
+          {children}
+        </JoystickProvider>
       </Physics>
     </LevelContext.Provider>
   ) : (

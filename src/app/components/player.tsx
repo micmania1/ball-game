@@ -11,10 +11,9 @@ import useQuaternion from '../utils/use-quaternion';
 import useHostFrame from '../multiplayer/use-host-frame';
 import useNonHostFrame from '../multiplayer/use-non-host-frame';
 import useCurrentPlayerFrame from '../multiplayer/use-current-player-frame';
-import { useIsPrivateGame, useJoystick } from './providers/game-provider';
-// import { Text } from '@react-three/uikit';
+import { useIsPrivateGame } from './providers/game-provider';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Card } from './ui/card';
+import { useJoystick } from './providers/joystick-provider';
 
 function int(b: boolean) {
   return b ? 1 : 0;
@@ -94,7 +93,7 @@ export default function Player({
     }
   });
 
-  const joystick = useJoystick(playerState.id);
+  const joystick = useJoystick();
   const applyDeadZone = useCallback((value: number, deadZone: number) => {
     return Math.abs(value) > deadZone ? value : 0;
   }, []);
@@ -108,8 +107,8 @@ export default function Player({
     } else if (joystick && joystick.isJoystickPressed()) {
       const deadZone = 0.2;
       const angle = joystick.angle();
-      const x = applyDeadZone(Math.sin(angle), deadZone) * -1;
-      const y = applyDeadZone(Math.cos(angle), deadZone);
+      const x = applyDeadZone(Math.cos(angle), deadZone) * -1;
+      const y = applyDeadZone(Math.sin(angle), deadZone) * -1;
 
       playerState.setState('sideways', x);
       playerState.setState('forward', y);
