@@ -1,87 +1,71 @@
-import { Container, DefaultProperties, Text } from '@react-three/uikit';
-import { Button } from './button';
-import {
-  FocusEvent,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from 'react';
-import { Html } from '@react-three/drei';
-import { ColorRepresentation } from 'three';
-import IntrinsicElements = React.JSX.IntrinsicElements;
-import styled from 'styled-components';
+import { Container, DefaultProperties, Input as InputImpl, Text, InputInternals } from '@react-three/uikit'
+import React, { ComponentPropsWithoutRef, useMemo, useState } from 'react'
+import { colors } from './theme'
+import { Signal, computed } from '@preact/signals-core'
 
-const NotVisible = styled.div`
-  width: 0;
-  height: 0;
-  overflow: hidden;
-`;
-
-type InputProps = IntrinsicElements['input'] & {
-  width?: number;
-  border?: number;
-  backgroundColor?: ColorRepresentation;
-  borderColor?: ColorRepresentation;
-};
-export default function Input({
-  onChange,
-  onFocus,
-  onBlur,
-  width,
-  border = 1,
-  backgroundColor,
-  borderColor,
+export function Input({
+  panelMaterialClass,
+  multiline,
+  value,
   defaultValue,
+  onValueChange,
+  tabIndex,
+  disabled = false,
+  placeholder,
   ...props
-}: InputProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState(String(defaultValue ?? ''));
-
-  const input = useMemo(() => {
-    return (
-      <input
-        onFocus={(e) => {
-          if (onFocus) {
-            onFocus(e);
-          }
-        }}
-        onBlur={(e) => {
-          if (onBlur) {
-            onBlur(e);
-          }
-        }}
-        onChange={(e) => {
-          setValue(e.currentTarget.value);
-          if (onChange) {
-            onChange(e);
-          }
-        }}
-        defaultValue={defaultValue}
-        {...props}
-        ref={inputRef}
-      />
-    );
-  }, [defaultValue, onBlur, onChange, onFocus, props]);
-
+}: ComponentPropsWithoutRef<typeof InputImpl> & { placeholder?: string }) {
+  const [internal, setInternal] = useState<InputInternals | null>(null)
+  const placeholderOpacity = useMemo(() => {
+    if (internal == null) {
+      return undefined
+    }
+    if (internal.value instanceof Signal) {
+      const signal = internal.value
+      return computed(() => (signal.value.length > 0 ? 0 : undefined))
+    }
+    return internal.value.length > 0 ? 0 : undefined
+  }, [internal])
   return (
-    <>
-      <Button
-        width={width}
-        onClick={(e) => {
-          inputRef.current?.focus();
-        }}
-        padding={16}
-        alignItems="center"
-        justifyContent="center"
+    <Container height={40} positionType="relative" overflow="hidden" {...props}>
+      <DefaultProperties
+        fontSize={14}
+        height="100%"
+        width="100%"
+        border={1}
+        paddingX={12}
+        paddingY={8}
+        lineHeight={1.43}
+        opacity={disabled ? 0.5 : undefined}
+        backgroundOpacity={disabled ? 0.5 : undefined}
       >
-        <Text>{value}</Text>
-      </Button>
-      <Html>
-        <NotVisible>{input}</NotVisible>
-      </Html>
-    </>
-  );
+        <InputImpl
+          ref={setInternal}
+          borderRadius={6}
+          backgroundColor={colors.background}
+          borderColor={colors.input}
+          focus={{
+            borderColor: colors.ring,
+          }}
+          panelMaterialClass={panelMaterialClass}
+          multiline={multiline}
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={onValueChange}
+          tabIndex={tabIndex}
+          disabled={disabled}
+        />
+        {placeholder != null && (
+          <Text
+            color={colors.mutedForeground}
+            opacity={placeholderOpacity}
+            borderOpacity={0}
+            inset={0}
+            positionType="absolute"
+          >
+            {placeholder}
+          </Text>
+        )}
+      </DefaultProperties>
+    </Container>
+  )
 }

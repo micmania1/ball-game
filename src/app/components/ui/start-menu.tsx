@@ -15,7 +15,7 @@ import {
 } from './dialog';
 import { Label } from './label';
 import { PerspectiveCamera } from '@react-three/drei';
-import Input from './input';
+import { Input } from './input';
 
 export default function StartMenu() {
   const game = useGameContext();
@@ -108,17 +108,7 @@ export default function StartMenu() {
                 <Label>
                   <Text>Code</Text>
                 </Label>
-                <Input
-                  type="text"
-                  name="code"
-                  onChange={(e) => setCode(e.currentTarget.value)}
-                  maxLength={codeLength}
-                  backgroundColor={'white'}
-                  borderColor={'black'}
-                  border={1}
-                  width={260}
-                  autoFocus
-                />
+                <Input onValueChange={(value) => setCode(value)} width={260} />
               </Container>
               <DialogFooter>
                 <Button onClick={() => join(code)}>

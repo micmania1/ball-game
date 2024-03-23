@@ -30,12 +30,12 @@ import {
 } from '../ui/dialog';
 import BallIcon from '../ui/ball-icon';
 import { Label } from '../ui/label';
-import Input from '../ui/input';
 import { colors } from '../../config/profile';
 import {
   useLocalProfileColor,
   useLocalProfileName,
 } from '../providers/local-profile';
+import { Input } from '../ui/input';
 
 type LobbyUiProps = {
   roomCode: string;
@@ -128,20 +128,10 @@ function LobbyUI({ roomCode }: LobbyUiProps) {
                 <Text>Display Name</Text>
               </Label>
               <Input
-                type="text"
-                name="displayName"
-                maxLength={15}
                 border={1}
                 width={260}
-                onChange={(e) => setName(e.currentTarget.value)}
+                onValueChange={(value) => setName(value)}
                 defaultValue={profileName}
-                autoFocus
-                onKeyDown={(e) => {
-                  const shouldSubmit = e.key === 'Enter';
-                  if (shouldSubmit) {
-                    submit();
-                  }
-                }}
               />
             </Container>
             <Container flexDirection="row" justifyContent="center" gap={24}>

@@ -1692,9 +1692,9 @@
   integrity sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==
 
 "@preact/signals-core@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.5.1.tgz#77d375fcd03fa01ac560cd2e9b038fe10a80fb23"
-  integrity sha512-dE6f+WCX5ZUDwXzUIWNMhhglmuLpqJhuy3X3xHrhZYI0Hm2LyQwOu0l9mdPiWrVNsE+Q7txOnJPgtIqHCYoBVA==
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.6.0.tgz#f3e47b7cddab60e61a087c9b422a28f52e58ce20"
+  integrity sha512-O/XGxwP85h1F7+ouqTMOIZ3+V1whfaV9ToIVcuyGriD4JkSD00cQo54BKdqjvBJxbenvp7ynfqRHEwI6e+NIhw==
 
 "@radix-ui/primitive@1.0.1":
   version "1.0.1"
@@ -1983,9 +1983,9 @@
     "@react-three/uikit" "^0.1.14"
 
 "@react-three/uikit@^0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@react-three/uikit/-/uikit-0.1.14.tgz#20d3054864a600fe266cd69eedf0844cfe6b6356"
-  integrity sha512-/1JLPj80BsLRr5Io0bGDevvLi2rO3dxyjlqeClppmkH/erwBl9KXD3h2sar/pjq9cecH/8UJXJtvKkYyCXRgUw==
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@react-three/uikit/-/uikit-0.1.19.tgz#c0a9a393dfbd514a0467e1a2eb69ff84ffc614c4"
+  integrity sha512-5huIorDrVMtsxwOcmnFGowiqKhHjNMyPg5PbKzeQ1lQbkpTb1bBkXSUayLbKTOHQs3v7KT10R5nSW35XhFNsmA==
   dependencies:
     "@preact/signals-core" "^1.5.1"
     chalk "^5.3.0"

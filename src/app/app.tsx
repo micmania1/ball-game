@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
 import { KeyboardControls } from '@react-three/drei';
 import Sky from './components/sky';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useRef, useState } from 'react';
 import GameProvider from './components/providers/game-provider';
 import { Route, Router, Switch } from 'wouter';
 import levels from './config/levels';
