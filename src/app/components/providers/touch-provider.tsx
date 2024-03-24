@@ -15,7 +15,10 @@ export default function TouchProvider({ children }: TouchProviderProps) {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    const callback = () => setEnabled(true);
+    const callback = () => {
+      console.log('TOUCH START TRIGGERED', Date.now().toString());
+      setEnabled(true);
+    };
     document.documentElement.addEventListener('touchstart', callback);
 
     return () =>

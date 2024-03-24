@@ -1,11 +1,13 @@
 import { Text } from '@react-three/uikit';
 import { Button } from './button';
 import { useJoystick } from '../providers/joystick-provider';
+import { useTouchEnabled } from '../providers/touch-provider';
 
 export default function JumpButton() {
   const joystick = useJoystick();
+  const isTouchEnabled = useTouchEnabled();
 
-  return (
+  return isTouchEnabled ? (
     <Button
       variant="secondary"
       onPointerDown={() => joystick.pressButton('jump')}
@@ -18,5 +20,5 @@ export default function JumpButton() {
         Jump
       </Text>
     </Button>
-  );
+  ) : null;
 }
