@@ -6,15 +6,16 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useKeyboardControls } from '@react-three/drei';
-import PauseMenu from '../ui/pause-menu';
-import { KeyboardControls } from '../../config/keyboard-controls';
 import { Physics } from '@react-three/rapier';
 import { useGameContext } from './game-provider';
-import { Redirect } from 'wouter';
-import levels from '../../config/levels';
-import { getRoomCode } from 'playroomkit';
 import JoystickProvider from './joystick-provider';
+import JumpButton from '../ui/jump-button';
+import { Container, Fullscreen, Root, Text } from '@react-three/uikit';
+import { PerspectiveCamera } from '@react-three/drei';
+import { LevelControls } from '../ui/level-controls';
+import { Defaults } from '../ui/theme';
+import { useThree } from '@react-three/fiber';
+import { defaultCameraOffset } from '../../config/camera';
 
 type LevelState = {
   isPaused: boolean;
@@ -33,7 +34,6 @@ interface LevelProviderProps {
 export default function LevelProvider({ children }: LevelProviderProps) {
   const [isPaused, setPaused] = useState(false);
   const game = useGameContext();
-  const roomCode = getRoomCode();
 
   const lose = useCallback(() => {
     console.log('Lose');
@@ -44,7 +44,13 @@ export default function LevelProvider({ children }: LevelProviderProps) {
     game.won();
   }, [game]);
 
-  return roomCode ? (
+  const camera = useThree((three) => three.camera);
+  useEffect(() => {
+    camera.position.set(...defaultCameraOffset);
+    camera.rotation.set(0, 0, 0);
+  }, [camera.position, camera.rotation]);
+
+  return (
     <LevelContext.Provider
       value={{
         isPaused,
@@ -53,15 +59,18 @@ export default function LevelProvider({ children }: LevelProviderProps) {
         won,
       }}
     >
+      <PerspectiveCamera
+        args={[75]}
+        makeDefault={true}
+        rotation={[Math.PI * 1.9, 0, 0]}
+      />
       <Physics paused={isPaused}>
-        <PauseMenu />
-        <JoystickProvider mode="dynamic" zoneSelector="#joystick-level-zone">
+        <JoystickProvider zoneSelector="#joystick-level-zone">
           {children}
+          <LevelControls />
         </JoystickProvider>
       </Physics>
     </LevelContext.Provider>
-  ) : (
-    <Redirect to={levels.start.url} />
   );
 }
 

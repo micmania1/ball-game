@@ -7,7 +7,7 @@ import {
   usePlayerState,
 } from 'playroomkit';
 import Player from '../player';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGameContext } from '../providers/game-provider';
 import { Physics, RigidBody } from '@react-three/rapier';
 import { collisionGroups } from '../../config/physics';
@@ -16,7 +16,7 @@ import { Redirect } from 'wouter';
 import levels from '../../config/levels';
 import useSpawner from '../physics/use-spawner';
 import { Vector3Tuple } from 'three';
-import { Container, Fullscreen, Text } from '@react-three/uikit';
+import { Container, Fullscreen, Root, Text } from '@react-three/uikit';
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import {
@@ -36,7 +36,12 @@ import {
   useLocalProfileName,
 } from '../providers/local-profile';
 import { Input } from '../ui/input';
-import JoystickProvider from '../providers/joystick-provider';
+import JoystickProvider, { useJoystick } from '../providers/joystick-provider';
+import { useTouchEnabled } from '../providers/touch-provider';
+import JumpButton from '../ui/jump-button';
+import { useRoomCode } from '../../multiplayer/require-room-code';
+import { Defaults } from '../ui/theme';
+import { useThree } from '@react-three/fiber';
 
 export default function Lobby() {
   const playerList = usePlayersList();
@@ -59,9 +64,8 @@ export default function Lobby() {
     });
   }, [playerList, spawner]);
 
-  const roomCode = getRoomCode();
-  return roomCode ? (
-    <JoystickProvider mode="dynamic" zoneSelector="#joystick-lobby-zone">
+  return (
+    <JoystickProvider zoneSelector="#joystick-lobby-zone">
       <group>
         <PerspectiveCamera
           position={[platformSize, platformSize, platformSize]}
@@ -83,7 +87,7 @@ export default function Lobby() {
             type="fixed"
             position={[0, -10, 0]}
             sensor
-            collisionGroups={collisionGroups.environment}
+            collisionGroups={collisionGroups.ground}
             onIntersectionEnter={(e) => {
               const ball = e.other.rigidBody;
               if (ball) {
@@ -96,18 +100,12 @@ export default function Lobby() {
           </RigidBody>
         </Physics>
       </group>
-      <LobbyUI roomCode={roomCode} />
+      <LobbyUI />
     </JoystickProvider>
-  ) : (
-    <Redirect to={levels.start.url} />
   );
 }
 
-type LobbyUiProps = {
-  roomCode: string;
-};
-
-function LobbyUI({ roomCode }: LobbyUiProps) {
+function LobbyUI() {
   const game = useGameContext();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const currentPlayer = me();
@@ -119,6 +117,11 @@ function LobbyUI({ roomCode }: LobbyUiProps) {
   const [localColor, setLocalProfileColor] = useLocalProfileColor();
   const [profileColor] = usePlayerState(me(), 'color', localColor);
   const [color, setColor] = useState(profileColor);
+
+  const roomCode = useRoomCode();
+
+  const joystick = useJoystick();
+  const isTouchEnabled = useTouchEnabled();
 
   const submit = useCallback(() => {
     setIsEditingProfile(false);
@@ -150,35 +153,41 @@ function LobbyUI({ roomCode }: LobbyUiProps) {
               </Text>
             </CardContent>
           </Card>
-          <Card backgroundOpacity={0.8} width="100%" alignSelf="flex-end">
-            <CardContent
-              paddingX={16}
-              paddingY={16}
-              flexWrap="wrap"
-              justifyContent="space-between"
-              flexDirection="row"
-            >
-              <Button
+
+          <Container width="100%" alignSelf="flex-end" gap={8}>
+            <Container width="100%" alignItems="flex-end" padding={8}>
+              <JumpButton />
+            </Container>
+            <Card backgroundOpacity={0.8} width="100%" alignSelf="flex-end">
+              <CardContent
+                paddingX={16}
+                paddingY={16}
+                flexWrap="wrap"
+                justifyContent="space-between"
                 flexDirection="row"
-                alignItems="center"
-                gap={8}
-                variant="ghost"
-                onClick={() => setIsEditingProfile(true)}
               >
-                <BallIcon color={profileColor} />
-                <Text fontWeight="bold">{profileName}</Text>
-              </Button>
-              <Container justifyContent="center">
-                {isHost() ? (
-                  <Button onClick={() => game.setLevel('level1')}>
-                    <Text>Start Game</Text>
-                  </Button>
-                ) : (
-                  <Text>Waiting for the host...</Text>
-                )}
-              </Container>
-            </CardContent>
-          </Card>
+                <Button
+                  flexDirection="row"
+                  alignItems="center"
+                  gap={8}
+                  variant="ghost"
+                  onClick={() => setIsEditingProfile(true)}
+                >
+                  <BallIcon color={profileColor} />
+                  <Text fontWeight="bold">{profileName}</Text>
+                </Button>
+                <Container justifyContent="center">
+                  {isHost() ? (
+                    <Button onClick={() => game.setLevel('level1')}>
+                      <Text>Start Game</Text>
+                    </Button>
+                  ) : (
+                    <Text>Waiting for the host...</Text>
+                  )}
+                </Container>
+              </CardContent>
+            </Card>
+          </Container>
 
           <DialogContent sm={{ maxWidth: 600 }}>
             <DialogHeader>

@@ -1,6 +1,6 @@
 import { useGameContext } from '../providers/game-provider';
-import { useCallback, useRef, useState } from 'react';
-import { Container, Fullscreen, Text } from '@react-three/uikit';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Container, Fullscreen, Root, Text } from '@react-three/uikit';
 import { Button } from './button';
 import { Card, CardContent } from './card';
 import { UserRound, UsersRound } from '@react-three/uikit-lucide';
@@ -22,7 +22,6 @@ export default function StartMenu() {
   const [isEnteringCode, setIsEnteringCode] = useState(false);
   const isJoiningRef = useRef(false);
   const [code, setCode] = useState('');
-  const codeLength = 4;
 
   const join = useCallback(
     (code: string) => {

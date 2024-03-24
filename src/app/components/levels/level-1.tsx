@@ -10,7 +10,6 @@ import FollowCamera from '../physics/follow-camera';
 import useSpawner from '../physics/use-spawner';
 import { RapierRigidBody } from '@react-three/rapier';
 import { Vector3Tuple } from 'three';
-import { PerspectiveCamera } from '@react-three/drei';
 
 export default function Level1() {
   const level = useLevelContext();

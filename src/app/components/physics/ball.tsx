@@ -4,14 +4,14 @@ import { ComponentProps, forwardRef } from 'react';
 import { Mesh } from 'three';
 
 type BallProps = {
+  radius: number;
   color: THREE.ColorRepresentation;
 } & ComponentProps<typeof Sphere>;
 
 const Ball = forwardRef<Mesh, BallProps>(function (
-  { color, children, ...props },
+  { radius, color, children, ...props },
   ref
 ) {
-  const radius = 0.25;
   return (
     <Sphere args={[radius]} {...props} ref={ref}>
       <meshStandardMaterial color={color} />

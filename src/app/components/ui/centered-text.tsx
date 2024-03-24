@@ -1,4 +1,5 @@
 import { Fullscreen, Text } from '@react-three/uikit';
+import { colors } from './theme';
 
 type CenteredTextProps = {
   children: string;
@@ -6,7 +7,9 @@ type CenteredTextProps = {
 export default function CenteredText({ children }: CenteredTextProps) {
   return (
     <Fullscreen alignItems="center" justifyContent="center">
-      <Text>{children}</Text>
+      <Text fontSize={48} color={colors.background}>
+        {children}
+      </Text>
     </Fullscreen>
   );
 }

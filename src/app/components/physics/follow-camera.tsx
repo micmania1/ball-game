@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import useVector3 from '../../utils/use-vector3';
 import { defaultCameraOffset } from '../../config/camera';
 import useQuaternion from '../../utils/use-quaternion';
-import { PerspectiveCamera } from '@react-three/drei';
 
 type CameraFocusProps = {
   offset?: Vector3Tuple;
@@ -47,5 +46,5 @@ export default function FollowCamera({
     }
   });
 
-  return enabled ? <object3D ref={objectRef}></object3D> : null;
+  return enabled ? <object3D ref={objectRef} /> : null;
 }

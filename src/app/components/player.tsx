@@ -1,7 +1,13 @@
 import { PlayerState, useIsHost, usePlayerState } from 'playroomkit';
 import useVector3 from '../utils/use-vector3';
-import { ReactNode, useCallback, useRef } from 'react';
-import { RapierRigidBody, RigidBody, useRapier } from '@react-three/rapier';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
+import {
+  BallCollider,
+  RapierCollider,
+  RapierRigidBody,
+  RigidBody,
+  useRapier,
+} from '@react-three/rapier';
 import { Billboard, Text, useKeyboardControls } from '@react-three/drei';
 import { KeyboardControls } from '../config/keyboard-controls';
 import Ball from './physics/ball';
@@ -21,12 +27,14 @@ function int(b: boolean) {
 
 type PlayerProps = {
   playerState: PlayerState;
+  jumpImpulse?: THREE.Vector3Tuple;
   position?: THREE.Vector3Tuple;
   children?: ReactNode;
   id?: string;
 };
 export default function Player({
   playerState,
+  jumpImpulse = [0, 0.3, 0],
   position = [0, 0, 0],
   children,
   id,
@@ -45,10 +53,16 @@ export default function Player({
   const camera = useThree((three) => three.camera);
   const isPrivateGame = useIsPrivateGame();
 
+  const groundColliderRef = useRef<RapierCollider>(null);
+  const isGroundedRef = useRef(false);
+  const isJumpingRef = useRef(false);
+  const jumpImpulseV3 = useVector3(jumpImpulse);
+
   useHostFrame((_, delta) => {
     const rigidBody = rigidBodyRef.current;
     const ball = ballRef.current;
-    if (rigidBody && ball) {
+    const groundCollider = groundColliderRef.current;
+    if (rigidBody && ball && groundCollider) {
       const forward = playerState.getState('forward') ?? 0;
       const sideways = playerState.getState('sideways') ?? 0;
 
@@ -61,6 +75,13 @@ export default function Player({
           { x: forwardMovement, y: 0, z: sidewaysMovement },
           true
         );
+      }
+
+      const isJumpPressed = !!playerState.getState('jump');
+      const isGrounded = isGroundedRef.current;
+      if (isJumpPressed && isGrounded && !isJumpingRef.current) {
+        rigidBody.applyImpulse(jumpImpulseV3, true);
+        isJumpingRef.current = true;
       }
 
       visualPosition.setFromMatrixPosition(ball.matrixWorld);
@@ -96,21 +117,17 @@ export default function Player({
   });
 
   const joystick = useJoystick();
-  const applyDeadZone = useCallback((value: number, deadZone: number) => {
-    return Math.abs(value) > deadZone ? value : 0;
-  }, []);
   useCurrentPlayerFrame(playerState.id, () => {
-    const isKeyboardPressed =
+    const isMovementKeyPressed =
       get().left || get().right || get().forward || get().backward;
 
-    if (isKeyboardPressed) {
+    if (isMovementKeyPressed) {
       playerState.setState('sideways', int(get().left) - int(get().right));
       playerState.setState('forward', int(get().backward) - int(get().forward));
     } else if (joystick && joystick.isJoystickPressed()) {
-      const deadZone = 0.2;
       const angle = joystick.angle();
-      const x = applyDeadZone(Math.cos(angle), deadZone) * -1;
-      const y = applyDeadZone(Math.sin(angle), deadZone) * -1;
+      const x = Math.cos(angle) * -1;
+      const y = Math.sin(angle) * -1;
 
       playerState.setState('sideways', x);
       playerState.setState('forward', y);
@@ -118,6 +135,13 @@ export default function Player({
       playerState.setState('sideways', 0);
       playerState.setState('forward', 0);
     }
+
+    const isKeyboardJumpPressed = get().jump;
+    const isJoystickJumpPressed = joystick.button('jump');
+    playerState.setState(
+      'jump',
+      isKeyboardJumpPressed || isJoystickJumpPressed
+    );
   });
 
   useFrame(() => {
@@ -130,8 +154,9 @@ export default function Player({
     }
   });
 
+  const radius = 0.25;
   const ball = (
-    <Ball color={color} ref={ballRef}>
+    <Ball radius={radius} color={color} ref={ballRef}>
       {children}
     </Ball>
   );
@@ -149,17 +174,31 @@ export default function Player({
       {playerNameBillboard}
       <RigidBody
         name={id}
-        colliders={'ball'}
+        colliders={false}
         position={position}
-        mass={1}
         angularDamping={1}
         linearDamping={0.75}
-        restitution={restitution.ball}
+        mass={1}
         friction={10}
+        restitution={restitution.ball}
         ref={rigidBodyRef}
-        collisionGroups={collisionGroups.ball}
       >
         {ball}
+        <BallCollider args={[radius]} collisionGroups={collisionGroups.ball} />
+        <BallCollider
+          args={[radius + 0.01]}
+          collisionGroups={collisionGroups.ball}
+          ref={groundColliderRef}
+          mass={0}
+          sensor={true}
+          onIntersectionEnter={() => {
+            isGroundedRef.current = true;
+            isJumpingRef.current = false;
+          }}
+          onIntersectionExit={() => {
+            isGroundedRef.current = false;
+          }}
+        />
       </RigidBody>
     </>
   ) : (

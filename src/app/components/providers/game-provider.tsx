@@ -76,6 +76,7 @@ export default function GameProvider({
       sideways: 0,
       position: [0, 3, -1],
       rotation: [0, 0, 0],
+      jump: 0,
     };
   }, [localColor, localName]);
 

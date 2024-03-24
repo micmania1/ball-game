@@ -12,9 +12,9 @@ export default function Platform({ size }: PlatformProps) {
   return (
     <group position={[0, height * 0.5, 0]}>
       <RigidBody
-        restitution={restitution.floor}
+        restitution={restitution.ground}
         friction={1}
-        collisionGroups={collisionGroups.environment}
+        collisionGroups={collisionGroups.ground}
         type="fixed"
       >
         <Box args={[width, height, depth]}>
