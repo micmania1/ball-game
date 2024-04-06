@@ -32,6 +32,8 @@ export default defineConfig({
     },
   },
 
+  assetsInclude: ['**/*.glb'],
+
   test: {
     globals: true,
     cache: {

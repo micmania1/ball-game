@@ -1,7 +1,7 @@
 import { interactionGroups, RigidBody } from '@react-three/rapier';
 import { Box, Plane } from '@react-three/drei';
 import * as THREE from 'three';
-import { collisionGroups, restitution } from '../../config/physics';
+import { collisionGroups, friction, restitution } from '../../config/physics';
 
 type PlatformProps = {
   size: THREE.Vector3Tuple;
@@ -13,7 +13,7 @@ export default function Platform({ size }: PlatformProps) {
     <group position={[0, height * 0.5, 0]}>
       <RigidBody
         restitution={restitution.ground}
-        friction={1}
+        friction={friction.ground}
         collisionGroups={collisionGroups.ground}
         type="fixed"
       >

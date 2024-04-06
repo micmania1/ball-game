@@ -14,7 +14,7 @@ const Ball = forwardRef<Mesh, BallProps>(function (
 ) {
   return (
     <Sphere args={[radius]} {...props} ref={ref}>
-      <meshStandardMaterial color={color} />
+      <meshPhysicalMaterial color={color} roughness={0} />
       {children}
     </Sphere>
   );

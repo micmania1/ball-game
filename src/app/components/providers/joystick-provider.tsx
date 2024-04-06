@@ -4,9 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
-  useState,
 } from 'react';
 import nipplejs from 'nipplejs';
 import useMap from '../../utils/use-map';

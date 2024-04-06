@@ -16,8 +16,22 @@ export const collisionGroups = {
   groundDetector: interactionGroups(groundDetector, [ground]),
 };
 
-export const restitution = {
+export type PhysicsGroup = keyof typeof collisionGroups;
+
+export const restitution: Record<PhysicsGroup, number> = {
   ground: 0.2,
-  obstacle: 0.001,
   ball: 1,
+  obstacle: 0.001,
+  goal: 0,
+  lose: 0,
+  groundDetector: 0,
+};
+
+export const friction: Record<PhysicsGroup, number> = {
+  ground: 1,
+  ball: 1,
+  obstacle: 0.25,
+  goal: 0,
+  lose: 0,
+  groundDetector: 0,
 };

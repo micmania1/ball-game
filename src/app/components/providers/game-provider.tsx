@@ -42,7 +42,7 @@ export default function GameProvider({
   const [, setLocation] = useLocation();
   const camera = useThree((three) => three.camera);
   const defaultCameraFocus = useVector3();
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(true);
   const [localName] = useLocalProfileName();
   const [localColor] = useLocalProfileColor();
 
@@ -112,7 +112,6 @@ export default function GameProvider({
           defaultPlayerStates: defaultPlayerState,
         },
         () => {
-          console.log('launch');
           if (settings.isPrivate) {
             setLevel('level1');
           } else {
@@ -128,6 +127,7 @@ export default function GameProvider({
   const startPrivate = useCallback(async () => {
     const roomCode = getRoomCode();
     if (roomCode) {
+      setIsPrivate(true);
       setLevel('level1');
     } else {
       await startMultiplayer({ isPrivate: true });

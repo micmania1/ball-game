@@ -35,14 +35,14 @@ export default function FollowCamera({
 
       q.setFromRotationMatrix(camera.matrixWorld);
       camera.quaternion.slerpQuaternions(q, camera.quaternion, 0.1);
-      camera.position.lerp(
-        {
-          x: x + offset[0],
-          y: y + offset[1],
-          z: z + offset[2],
-        },
-        0.1
-      );
+      camera.lookAt(focusPosition);
+
+      const cameraPosition = {
+        x: x + offset[0],
+        y: y + offset[1],
+        z: z + offset[2],
+      };
+      camera.position.lerp(cameraPosition, 0.1);
     }
   });
 
