@@ -1,4 +1,9 @@
-import { Box, PerspectiveCamera } from '@react-three/drei';
+import {
+  Box,
+  OrbitControls,
+  OrthographicCamera,
+  PerspectiveCamera,
+} from '@react-three/drei';
 import {
   getRoomCode,
   isHost,
@@ -42,10 +47,12 @@ import JumpButton from '../ui/jump-button';
 import { useRoomCode } from '../../multiplayer/require-room-code';
 import { Defaults } from '../ui/theme';
 import { useThree } from '@react-three/fiber';
+import useVector3 from '../../utils/use-vector3';
 
 export default function Lobby() {
   const playerList = usePlayersList();
-
+  const camera = useThree((three) => three.camera);
+  const center = useVector3([0, 0, 0]);
   const platformSize = 10;
   const spawnArea: Vector3Tuple = [platformSize * 0.8, 5, platformSize * 0.8];
   const spawner = useSpawner(spawnArea);
@@ -64,14 +71,14 @@ export default function Lobby() {
     });
   }, [playerList, spawner]);
 
+  useEffect(() => {
+    camera.lookAt(center);
+  }, [camera, center]);
+
   return (
     <JoystickProvider zoneSelector="#joystick-lobby-zone">
       <group>
-        <PerspectiveCamera
-          position={[platformSize, platformSize, platformSize]}
-          rotation={[-0.8, 0.56, 0.52]}
-          makeDefault
-        />
+        <PerspectiveCamera position={[-10, platformSize, -10]} makeDefault />
         <Physics>
           <Platform size={[platformSize, 0.1, platformSize]} />
           {players.map((player) => (
@@ -119,9 +126,6 @@ function LobbyUI() {
   const [color, setColor] = useState(profileColor);
 
   const roomCode = useRoomCode();
-
-  const joystick = useJoystick();
-  const isTouchEnabled = useTouchEnabled();
 
   const submit = useCallback(() => {
     setIsEditingProfile(false);
