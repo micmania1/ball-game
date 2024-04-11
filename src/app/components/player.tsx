@@ -1,11 +1,20 @@
 import { PlayerState, useIsHost, usePlayerState } from 'playroomkit';
 import useVector3 from '../utils/use-vector3';
 import { ReactNode, useEffect, useRef } from 'react';
-import { RapierRigidBody, RigidBody, useRapier } from '@react-three/rapier';
+import {
+  BallCollider,
+  RapierRigidBody,
+  RigidBody,
+  useRapier,
+} from '@react-three/rapier';
 import { Billboard, Text, useKeyboardControls } from '@react-three/drei';
 import { KeyboardControls } from '../config/keyboard-controls';
 import Ball from './physics/ball';
-import { collisionGroups, restitution } from '../config/physics';
+import {
+  collisionGroups,
+  friction as frictionConfig,
+  restitution,
+} from '../config/physics';
 import * as THREE from 'three';
 import useQuaternion from '../utils/use-quaternion';
 import useHostFrame from '../multiplayer/use-host-frame';
@@ -29,7 +38,6 @@ type PlayerProps = {
 };
 export default function Player({
   playerState,
-  jumpImpulse = [0, 0.4, 0],
   position = [0, 0, 0],
   children,
   id,
@@ -38,7 +46,6 @@ export default function Player({
   const ballRef = useRef<THREE.Mesh>(null);
   const { isPaused } = useRapier();
   const [, get] = useKeyboardControls<KeyboardControls>();
-  const acceleration = 0.25;
   const isHost = useIsHost();
   const visualPosition = useVector3();
   const visualRotation = useQuaternion();
@@ -47,13 +54,16 @@ export default function Player({
   const playerNameRef = useRef<THREE.Group>(null);
   const camera = useThree((three) => three.camera);
   const isPrivateGame = useIsPrivateGame();
+  const mass = 0.2;
+  const friction = frictionConfig.ball;
+  const acceleration = mass ** mass;
+  const jumpImpulseV3 = useVector3([0, mass * 6, 0]);
 
   const [isJumpPressed, setIsJumpPressed] = usePlayerState(
     playerState,
     'jump',
     false
   );
-  const jumpImpulseV3 = useVector3(jumpImpulse);
 
   const { world } = useRapier();
 
@@ -199,16 +209,15 @@ export default function Player({
       {playerNameBillboard}
       <RigidBody
         name={id}
-        colliders="ball"
+        colliders={false}
         position={position}
         angularDamping={1}
         linearDamping={0.75}
-        mass={1}
-        friction={10}
         restitution={restitution.ball}
         ref={rigidBodyRef}
         collisionGroups={collisionGroups.ball}
       >
+        <BallCollider args={[radius]} mass={mass} friction={friction} />
         {ball}
       </RigidBody>
     </>

@@ -1,4 +1,9 @@
-import { Sphere } from '@react-three/drei';
+import {
+  Cylinder,
+  MeshTransmissionMaterial,
+  Sphere,
+  TorusKnot,
+} from '@react-three/drei';
 import * as THREE from 'three';
 import { ComponentProps, forwardRef } from 'react';
 import { Mesh } from 'three';
@@ -14,7 +19,7 @@ const Ball = forwardRef<Mesh, BallProps>(function (
 ) {
   return (
     <Sphere args={[radius]} {...props} ref={ref}>
-      <meshPhysicalMaterial color={color} roughness={0} />
+      <meshPhysicalMaterial color={color} roughness={0.5} />
       {children}
     </Sphere>
   );
