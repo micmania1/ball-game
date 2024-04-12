@@ -1,24 +1,10 @@
-import {
-  Box,
-  OrbitControls,
-  OrthographicCamera,
-  PerspectiveCamera,
-} from '@react-three/drei';
-import {
-  getRoomCode,
-  isHost,
-  me,
-  usePlayersList,
-  usePlayerState,
-} from 'playroomkit';
+import { Box, PerspectiveCamera } from '@react-three/drei';
+import { isHost, me, usePlayersList, usePlayerState } from 'playroomkit';
 import Player from '../player';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGameContext } from '../providers/game-provider';
 import { Physics, RigidBody } from '@react-three/rapier';
 import { collisionGroups } from '../../config/physics';
-import Platform from '../physics/platform';
-import { Redirect } from 'wouter';
-import levels from '../../config/levels';
 import useSpawner from '../physics/use-spawner';
 import { Vector3Tuple } from 'three';
 import { Container, Fullscreen, Root, Text } from '@react-three/uikit';
@@ -41,13 +27,13 @@ import {
   useLocalProfileName,
 } from '../providers/local-profile';
 import { Input } from '../ui/input';
-import JoystickProvider, { useJoystick } from '../providers/joystick-provider';
-import { useTouchEnabled } from '../providers/touch-provider';
+import JoystickProvider from '../providers/joystick-provider';
 import JumpButton from '../ui/jump-button';
 import { useRoomCode } from '../../multiplayer/require-room-code';
-import { Defaults } from '../ui/theme';
 import { useThree } from '@react-three/fiber';
 import useVector3 from '../../utils/use-vector3';
+import AutoGenerateLevel from './auto-generate-level';
+import lobby from '../../../assets/lobby.glb';
 
 export default function Lobby() {
   const playerList = usePlayersList();
@@ -77,10 +63,13 @@ export default function Lobby() {
 
   return (
     <JoystickProvider zoneSelector="#joystick-lobby-zone">
-      <group>
-        <PerspectiveCamera position={[-10, platformSize, -10]} makeDefault />
-        <Physics>
-          <Platform size={[platformSize, 0.1, platformSize]} />
+      <ambientLight args={[0x800080, 1]} />
+      <directionalLight args={[0xffffff, 5]} position={[5, 30, 100]} />
+      <directionalLight args={[0xffffff, 0.5]} position={[5, 30, -100]} />
+      <PerspectiveCamera position={[-10, platformSize, -10]} makeDefault />
+      <Physics>
+        <group position={[-0.5, 0, 2]}>
+          <AutoGenerateLevel url={lobby} displayGoal={false} />
           {players.map((player) => (
             <Player
               key={player.state.id}
@@ -105,8 +94,8 @@ export default function Lobby() {
           >
             <Box args={[50, 1, 50]} visible={false} />
           </RigidBody>
-        </Physics>
-      </group>
+        </group>
+      </Physics>
       <LobbyUI />
     </JoystickProvider>
   );

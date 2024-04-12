@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
-import { Billboard, KeyboardControls, OrbitControls } from '@react-three/drei';
+import { KeyboardControls } from '@react-three/drei';
 import Sky from './components/sky';
 import { lazy, Suspense } from 'react';
 import GameProvider from './components/providers/game-provider';
@@ -20,11 +20,6 @@ import TouchProvider, {
   useTouchEnabled,
 } from './components/providers/touch-provider';
 import RequireRoomCode from './multiplayer/require-room-code';
-import { LevelControls } from './components/ui/level-controls';
-import Ball from './components/physics/ball';
-import { Container, Fullscreen, Root, Text } from '@react-three/uikit';
-import { Card, CardContent } from './components/ui/card';
-import { NameBillboard } from './components/ui/name-billboard';
 
 const LevelProvider = lazy(
   () => import('./components/providers/level-provider')
@@ -86,8 +81,6 @@ export function App() {
       <StyledApp>
         <LocalProfile>
           <Canvas camera={{ position: defaultCameraOffset }}>
-            <ambientLight args={[0xffffff, 1]} />
-            <directionalLight position={[0, 10, -10]} />
             <Sky />
 
             <Defaults>

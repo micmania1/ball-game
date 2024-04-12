@@ -23,9 +23,13 @@ import Goal from '../physics/goal';
 import { useLevelContext } from '../providers/level-provider';
 
 type LevelMapProp = {
+  displayGoal?: boolean;
   url: string;
 };
-export default function AutoGenerateLevel({ url }: LevelMapProp) {
+export default function AutoGenerateLevel({
+  url,
+  displayGoal = true,
+}: LevelMapProp) {
   const { world } = useRapier();
   const { scene } = useGLTF(url);
   const goalPosition = useVector3();
@@ -100,11 +104,15 @@ export default function AutoGenerateLevel({ url }: LevelMapProp) {
   return (
     <>
       <primitive object={scene} />
-      <Goal
-        position={goalPosition.toArray()}
-        size={[5, 5, 5]}
-        onEnter={() => level.won()}
-      />
+      {displayGoal ? (
+        <Goal
+          position={goalPosition.toArray()}
+          size={[5, 5, 5]}
+          onEnter={() => level.won()}
+        />
+      ) : (
+        false
+      )}
     </>
   );
 }

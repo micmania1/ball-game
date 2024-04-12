@@ -59,6 +59,10 @@ export default function LevelProvider({ children }: LevelProviderProps) {
         won,
       }}
     >
+      <ambientLight args={[0x800080, 1]} />
+      <directionalLight args={[0xffffff, 5]} position={[5, 30, 100]} />
+      <directionalLight args={[0xffffff, 0.5]} position={[5, 30, -100]} />
+
       <PerspectiveCamera
         args={[75]}
         makeDefault={true}
