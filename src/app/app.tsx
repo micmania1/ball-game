@@ -1,10 +1,6 @@
 import styled from 'styled-components';
 import { Canvas } from '@react-three/fiber';
-import {
-  GizmoViewport,
-  KeyboardControls,
-  PerspectiveCamera,
-} from '@react-three/drei';
+import { Billboard, KeyboardControls, OrbitControls } from '@react-three/drei';
 import Sky from './components/sky';
 import { lazy, Suspense } from 'react';
 import GameProvider from './components/providers/game-provider';
@@ -18,7 +14,6 @@ import { defaultCameraOffset } from './config/camera';
 import RouteFallback from './components/route-fallback';
 import JoinRoom, { JoinRoomParams } from './components/levels/join-room';
 import CenteredText from './components/ui/centered-text';
-import { Root } from '@react-three/uikit';
 import { Defaults } from './components/ui/theme';
 import LocalProfile from './components/providers/local-profile';
 import TouchProvider, {
@@ -27,6 +22,9 @@ import TouchProvider, {
 import RequireRoomCode from './multiplayer/require-room-code';
 import { LevelControls } from './components/ui/level-controls';
 import Ball from './components/physics/ball';
+import { Container, Fullscreen, Root, Text } from '@react-three/uikit';
+import { Card, CardContent } from './components/ui/card';
+import { NameBillboard } from './components/ui/name-billboard';
 
 const LevelProvider = lazy(
   () => import('./components/providers/level-provider')

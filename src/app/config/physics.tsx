@@ -28,7 +28,7 @@ export const restitution: Record<PhysicsGroup, number> = {
 };
 
 export const friction: Record<PhysicsGroup, number> = {
-  ground: 10,
+  ground: 1,
   ball: 10,
   obstacle: 0.25,
   goal: 0,

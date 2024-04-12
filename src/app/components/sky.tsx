@@ -6,7 +6,7 @@ import skybox from '../../assets/skybox.png';
 export default function Sky() {
   const sky = useLoader(THREE.TextureLoader, skybox);
   return (
-    <Sphere args={[1000]}>
+    <Sphere args={[800]}>
       <meshBasicMaterial map={sky} side={THREE.BackSide} />
     </Sphere>
   );

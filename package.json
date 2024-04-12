@@ -24,6 +24,7 @@
     "react-is": "18.2.0",
     "styled-components": "5.3.6",
     "three": "^0.161.0",
+    "three-custom-shader-material": "^5.4.0",
     "wouter": "^3.0.0"
   },
   "devDependencies": {

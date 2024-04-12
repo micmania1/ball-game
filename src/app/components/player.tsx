@@ -1,4 +1,4 @@
-import { PlayerState, useIsHost, usePlayerState } from 'playroomkit';
+import { me, PlayerState, useIsHost, usePlayerState } from 'playroomkit';
 import useVector3 from '../utils/use-vector3';
 import { ReactNode, useEffect, useRef } from 'react';
 import {
@@ -7,7 +7,7 @@ import {
   RigidBody,
   useRapier,
 } from '@react-three/rapier';
-import { Billboard, Text, useKeyboardControls } from '@react-three/drei';
+import { useKeyboardControls } from '@react-three/drei';
 import { KeyboardControls } from '../config/keyboard-controls';
 import Ball from './physics/ball';
 import {
@@ -24,6 +24,8 @@ import { useIsPrivateGame } from './providers/game-provider';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useJoystick } from './providers/joystick-provider';
 import { Ray } from '@dimforge/rapier3d-compat';
+import { Container, Root, Text } from '@react-three/uikit';
+import { NameBillboard } from './ui/name-billboard';
 
 function int(b: boolean) {
   return b ? 1 : 0;
@@ -54,9 +56,11 @@ export default function Player({
   const playerNameRef = useRef<THREE.Group>(null);
   const camera = useThree((three) => three.camera);
   const isPrivateGame = useIsPrivateGame();
-  const mass = 0.2;
+  const radius = 0.5;
+  const mass = 0.8;
   const friction = frictionConfig.ball;
-  const acceleration = mass ** mass;
+  const acceleration = 6;
+  // const acceleration = mass * 10;
   const jumpImpulseV3 = useVector3([0, mass * 6, 0]);
 
   const [isJumpPressed, setIsJumpPressed] = usePlayerState(
@@ -189,24 +193,14 @@ export default function Player({
     }
   });
 
-  const radius = 0.25;
   const ball = (
     <Ball radius={radius} color={color} ref={ballRef}>
       {children}
     </Ball>
   );
 
-  const playerNameBillboard = isPrivateGame ? null : (
-    <Billboard ref={playerNameRef}>
-      <Text fontSize={0.3} outlineColor="black" color="white">
-        {playerName}
-      </Text>
-    </Billboard>
-  );
-
   return isHost ? (
-    <>
-      {playerNameBillboard}
+    <NameBillboard name={playerName} visible={me().id !== playerState.id}>
       <RigidBody
         name={id}
         colliders={false}
@@ -220,11 +214,8 @@ export default function Player({
         <BallCollider args={[radius]} mass={mass} friction={friction} />
         {ball}
       </RigidBody>
-    </>
+    </NameBillboard>
   ) : (
-    <>
-      {playerNameBillboard}
-      {ball}
-    </>
+    <NameBillboard name={playerName}>{ball}</NameBillboard>
   );
 }
