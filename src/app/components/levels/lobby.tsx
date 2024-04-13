@@ -68,33 +68,31 @@ export default function Lobby() {
       <directionalLight args={[0xffffff, 0.5]} position={[5, 30, -100]} />
       <PerspectiveCamera position={[-10, platformSize, -10]} makeDefault />
       <Physics>
-        <group position={[-0.5, 0, 2]}>
-          <AutoGenerateLevel url={lobby} displayGoal={false} />
-          {players.map((player) => (
-            <Player
-              key={player.state.id}
-              id={player.state.id}
-              playerState={player.state}
-              position={player.spawnPosition}
-            />
-          ))}
+        <AutoGenerateLevel url={lobby} displayGoal={false} />
+        {players.map((player) => (
+          <Player
+            key={player.state.id}
+            id={player.state.id}
+            playerState={player.state}
+            position={player.spawnPosition}
+          />
+        ))}
 
-          <RigidBody
-            type="fixed"
-            position={[0, -10, 0]}
-            sensor
-            collisionGroups={collisionGroups.ground}
-            onIntersectionEnter={(e) => {
-              const ball = e.other.rigidBody;
-              if (ball) {
-                spawner.spawn(ball);
-              }
-            }}
-            includeInvisible
-          >
-            <Box args={[50, 1, 50]} visible={false} />
-          </RigidBody>
-        </group>
+        <RigidBody
+          type="fixed"
+          position={[0, -10, 0]}
+          sensor
+          collisionGroups={collisionGroups.ground}
+          onIntersectionEnter={(e) => {
+            const ball = e.other.rigidBody;
+            if (ball) {
+              spawner.spawn(ball);
+            }
+          }}
+          includeInvisible
+        >
+          <Box args={[50, 1, 50]} visible={false} />
+        </RigidBody>
       </Physics>
       <LobbyUI />
     </JoystickProvider>
