@@ -20,11 +20,8 @@ import useQuaternion from '../utils/use-quaternion';
 import useHostFrame from '../multiplayer/use-host-frame';
 import useNonHostFrame from '../multiplayer/use-non-host-frame';
 import useCurrentPlayerFrame from '../multiplayer/use-current-player-frame';
-import { useIsPrivateGame } from './providers/game-provider';
-import { useFrame, useThree } from '@react-three/fiber';
 import { useJoystick } from './providers/joystick-provider';
 import { Ray } from '@dimforge/rapier3d-compat';
-import { Container, Root, Text } from '@react-three/uikit';
 import { NameBillboard } from './ui/name-billboard';
 
 function int(b: boolean) {
@@ -53,14 +50,10 @@ export default function Player({
   const visualRotation = useQuaternion();
   const [color] = usePlayerState(playerState, 'color', 0xff0000);
   const [playerName] = usePlayerState(playerState, 'name', '');
-  const playerNameRef = useRef<THREE.Group>(null);
-  const camera = useThree((three) => three.camera);
-  const isPrivateGame = useIsPrivateGame();
   const radius = 0.5;
   const mass = 0.8;
   const friction = frictionConfig.ball;
   const acceleration = 6;
-  // const acceleration = mass * 10;
   const jumpImpulseV3 = useVector3([0, mass * 6, 0]);
 
   const [isJumpPressed, setIsJumpPressed] = usePlayerState(
@@ -70,7 +63,6 @@ export default function Player({
   );
 
   const { world } = useRapier();
-
   const isJumpingRef = useRef(false);
   useEffect(() => {
     if (!isHost) {
@@ -87,7 +79,8 @@ export default function Player({
         const solid = false;
         world.intersectionsWithRay(ray, maxToi, solid, (hit) => {
           const isGrounded =
-            hit.collider.collisionGroups() === collisionGroups.ground;
+            hit.collider.collisionGroups() === collisionGroups.ground ||
+            collisionGroups.ball;
           if (isGrounded) {
             isJumpingRef.current = true;
             return false;
@@ -183,26 +176,16 @@ export default function Player({
     setIsJumpPressed(isKeyboardJumpPressed || isJoystickJumpPressed);
   });
 
-  useFrame(() => {
-    const playerName = playerNameRef.current;
-    const ball = ballRef.current;
-    if (playerName && ball && camera) {
-      playerName.lookAt(camera.position);
-      playerName.position.setFromMatrixPosition(ball.matrixWorld);
-      playerName.position.y += 0.5;
-    }
-  });
-
   const ball = (
     <Ball radius={radius} color={color} ref={ballRef}>
       {children}
     </Ball>
   );
 
-  const showPlayerName = me().id !== playerState.id;
+  const displayName = me().id === playerState.id ? 'You' : playerName;
 
   return isHost ? (
-    <NameBillboard name={playerName} visible={showPlayerName}>
+    <NameBillboard name={displayName}>
       <RigidBody
         name={id}
         colliders={false}
@@ -218,8 +201,6 @@ export default function Player({
       </RigidBody>
     </NameBillboard>
   ) : (
-    <NameBillboard name={playerName} visible={showPlayerName}>
-      {ball}
-    </NameBillboard>
+    <NameBillboard name={displayName}>{ball}</NameBillboard>
   );
 }
