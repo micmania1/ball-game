@@ -23,6 +23,7 @@ import useCurrentPlayerFrame from '../multiplayer/use-current-player-frame';
 import { useJoystick } from './providers/joystick-provider';
 import { Ray } from '@dimforge/rapier3d-compat';
 import { NameBillboard } from './ui/name-billboard';
+import { useIsPrivateGame } from './providers/game-provider';
 
 function int(b: boolean) {
   return b ? 1 : 0;
@@ -55,6 +56,7 @@ export default function Player({
   const friction = frictionConfig.ball;
   const acceleration = 6;
   const jumpImpulseV3 = useVector3([0, mass * 6, 0]);
+  const isPrivateGame = useIsPrivateGame();
 
   const [isJumpPressed, setIsJumpPressed] = usePlayerState(
     playerState,
@@ -115,6 +117,7 @@ export default function Player({
         const ballCollider = rigidBody.collider(0);
         if (ballCollider) {
           isJumpingRef.current = false;
+          rigidBody.resetForces(false);
           rigidBody.applyImpulse(jumpImpulseV3, true);
         }
       }
@@ -185,7 +188,7 @@ export default function Player({
   const displayName = me().id === playerState.id ? 'You' : playerName;
 
   return isHost ? (
-    <NameBillboard name={displayName}>
+    <NameBillboard name={displayName} visible={!isPrivateGame}>
       <RigidBody
         name={id}
         colliders={false}
@@ -201,6 +204,8 @@ export default function Player({
       </RigidBody>
     </NameBillboard>
   ) : (
-    <NameBillboard name={displayName}>{ball}</NameBillboard>
+    <NameBillboard name={displayName} visible={!isPrivateGame}>
+      {ball}
+    </NameBillboard>
   );
 }
