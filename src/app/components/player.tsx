@@ -199,8 +199,10 @@ export default function Player({
     </Ball>
   );
 
+  const showPlayerName = me().id !== playerState.id;
+
   return isHost ? (
-    <NameBillboard name={playerName} visible={me().id !== playerState.id}>
+    <NameBillboard name={playerName} visible={showPlayerName}>
       <RigidBody
         name={id}
         colliders={false}
@@ -216,6 +218,8 @@ export default function Player({
       </RigidBody>
     </NameBillboard>
   ) : (
-    <NameBillboard name={playerName}>{ball}</NameBillboard>
+    <NameBillboard name={playerName} visible={showPlayerName}>
+      {ball}
+    </NameBillboard>
   );
 }
